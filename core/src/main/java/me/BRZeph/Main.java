@@ -21,16 +21,10 @@ public class Main extends Game {
     private static SpriteBatch spriteBatch;
     private static BitmapFont bitmapFont;
     private static ShapeRenderer shapeRenderer;
-    private static OrthographicCamera orthographicCamera;
     //    private static PerspectiveCamera perspectiveCamera;
     private static TextureAtlas textureAtlas;
-    private static Sound sound;
-    private static Music music;
-    private static ParticleEffect particleEffect;
-    private static FrameBuffer frameBuffer;
     private static Sprite sprite;
 
-    private static float cameraSpeed = 500;
     private static float runTime = 0;
 
     @Override
@@ -39,9 +33,6 @@ public class Main extends Game {
         spriteBatch = new SpriteBatch();
         bitmapFont = new BitmapFont();
         shapeRenderer = new ShapeRenderer();
-        orthographicCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        orthographicCamera.update();
-        spriteBatch.setProjectionMatrix(orthographicCamera.combined);
         textureAtlas = new TextureAtlas();
         sprite = new Sprite();
 
@@ -62,8 +53,6 @@ public class Main extends Game {
 
         com.badlogic.gdx.Gdx.gl.glClear(com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT);
         super.render();
-        orthographicCamera.update();
-        shapeRenderer.setProjectionMatrix(orthographicCamera.combined);
     }
 
     @Override
@@ -90,59 +79,11 @@ public class Main extends Game {
         }
     }
 
-    public static float getCameraSpeed() {
-        return cameraSpeed;
-    }
-
-    public static void setCameraSpeed(float cameraSpeed) {
-        Main.cameraSpeed = cameraSpeed;
-    }
-
     public static AssetManager getAssetManager() {
         return assetManager;
     }
 
     public static ScreenManager getScreenManager() {
         return screenManager;
-    }
-
-    public static SpriteBatch getSpriteBatch() {
-        return spriteBatch;
-    }
-
-    public static BitmapFont getBitmapFont() {
-        return bitmapFont;
-    }
-
-    public static ShapeRenderer getShapeRenderer() {
-        return shapeRenderer;
-    }
-
-    public static OrthographicCamera getOrthographicCamera() {
-        return orthographicCamera;
-    }
-
-    public static TextureAtlas getTextureAtlas() {
-        return textureAtlas;
-    }
-
-    public static Sound getSound() {
-        return sound;
-    }
-
-    public static Music getMusic() {
-        return music;
-    }
-
-    public static ParticleEffect getParticleEffect() {
-        return particleEffect;
-    }
-
-    public static FrameBuffer getFrameBuffer() {
-        return frameBuffer;
-    }
-
-    public static Sprite getSprite() {
-        return sprite;
     }
 }

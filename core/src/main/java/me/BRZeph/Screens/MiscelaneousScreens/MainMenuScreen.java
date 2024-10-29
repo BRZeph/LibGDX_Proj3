@@ -24,13 +24,13 @@ public class MainMenuScreen implements Screen, InputProcessor {
         this.screenManager = screenManager;
         this.assetManager = assetManager;
 
-        spriteBatch = Main.getSpriteBatch();
+        spriteBatch = new SpriteBatch();
         loadAssets();
     }
     private void loadAssets(){
-        assetManager.load(Constants.ScreensAssets.MAIN_MENU_BACKGROUND, Texture.class);
+        assetManager.load(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND, Texture.class);
         assetManager.finishLoading();
-        backgroundTexture = assetManager.get(Constants.ScreensAssets.MAIN_MENU_BACKGROUND, Texture.class);
+        backgroundTexture = assetManager.get(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND, Texture.class);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         GlobalUtils.consoleLog("Calling dispose method of MainMenuScreen");
-        assetManager.unload(Constants.ScreensAssets.MAIN_MENU_BACKGROUND);
+        assetManager.unload(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
     private void drawBackground() {
         spriteBatch.begin();
         spriteBatch.draw(backgroundTexture,
-            (float) -com.badlogic.gdx.Gdx.graphics.getWidth() /2, (float) -com.badlogic.gdx.Gdx.graphics.getHeight() /2,
+             0,0,
             com.badlogic.gdx.Gdx.graphics.getWidth(), com.badlogic.gdx.Gdx.graphics.getHeight());
         spriteBatch.end();
     }

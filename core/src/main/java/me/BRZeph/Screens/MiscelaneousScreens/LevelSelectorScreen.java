@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import me.BRZeph.Main;
 import me.BRZeph.core.ScreenManager;
+import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
 
 public class LevelSelectorScreen implements Screen, InputProcessor {
     private final ScreenManager screenManager;
     private final AssetManager assetManager;
-
 
     private SpriteBatch spriteBatch;
     private Texture backgroundTexture;
@@ -22,16 +22,18 @@ public class LevelSelectorScreen implements Screen, InputProcessor {
         this.screenManager = screenManager;
         this.assetManager = assetManager;
 
-        spriteBatch = Main.getSpriteBatch();
+        spriteBatch = new SpriteBatch();
         loadAssets();
     }
 
     private void loadAssets(){
         GlobalUtils.consoleLog("Calling loadAssets method of LevelSelectorScreen");
 
-        assetManager.load("Screens/LevelsScreen/LevelSelectorScreen_bg.png", Texture.class);
+        assetManager.load(Constants.Paths.ScreensTexturesPath.LEVEL_SELECTOR_BACKGROUND, Texture.class);
         assetManager.finishLoading();
-        backgroundTexture = assetManager.get("Screens/LevelsScreen/LevelSelectorScreen_bg.png", Texture.class);
+        //only 1 asset to be loaded, so I decided to load it in here and not on the asset manager.
+
+        backgroundTexture = assetManager.get(Constants.Paths.ScreensTexturesPath.LEVEL_SELECTOR_BACKGROUND, Texture.class);
     }
 
     @Override
@@ -68,13 +70,13 @@ public class LevelSelectorScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         GlobalUtils.consoleLog("Calling dispose method of LevelSelectorScreen");
-        assetManager.unload("Screens/LevelsScreen/LevelSelectorScreen_bg.png");
+        assetManager.unload(Constants.Paths.ScreensTexturesPath.LEVEL_SELECTOR_BACKGROUND);
     }
 
     private void drawBackground() {
         spriteBatch.begin();
         spriteBatch.draw(backgroundTexture,
-            (float) -com.badlogic.gdx.Gdx.graphics.getWidth() /2, (float) -com.badlogic.gdx.Gdx.graphics.getHeight() /2,
+            0,0,
             com.badlogic.gdx.Gdx.graphics.getWidth(), com.badlogic.gdx.Gdx.graphics.getHeight());
         spriteBatch.end();
     }
