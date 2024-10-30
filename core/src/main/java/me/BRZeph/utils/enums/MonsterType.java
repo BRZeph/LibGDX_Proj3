@@ -5,15 +5,15 @@ import me.BRZeph.Main;
 import me.BRZeph.utils.Constants;
 
 public enum MonsterType {
-    ZOMBIE  (Main.getAssetManager().get(
-        Constants.Paths.MonstersTexturesPath.ZOMBIE_TEXTURE), Constants.AssetsMonsters.ZOMBIE_WIDTH,
-        Constants.AssetsMonsters.ZOMBIE_HEIGHT, Constants.AssetsMonsters.ZOMBIE_SPEED, Constants.AssetsMonsters.ZOMBIE_NEXUS_DMG,
-        Constants.AssetsMonsters.ZOMBIE_HEALTH
+    ZOMBIE  (Main.getAssetManager().get(Constants.Paths.MonstersTexturesPath.ZOMBIE_TEXTURE),
+        Constants.AssetsMonsters.ZOMBIE_WIDTH, Constants.AssetsMonsters.ZOMBIE_HEIGHT, Constants.AssetsMonsters.ZOMBIE_SPEED,
+        Constants.AssetsMonsters.ZOMBIE_NEXUS_DMG, Constants.AssetsMonsters.ZOMBIE_HEALTH, Constants.AssetsMonsters.ZOMBIE_GOLD_LOOT,
+        Constants.AssetsMonsters.ZOMBIE_ESSENCE_LOOT, Constants.AssetsMonsters.ZOMBIE_MOMENTUM_LOOT
     ),
-    SKELETON  (Main.getAssetManager().get(
-        Constants.Paths.MonstersTexturesPath.SKELETON_TEXTURE), Constants.AssetsMonsters.SKELETON_WIDTH,
-        Constants.AssetsMonsters.SKELETON_HEIGHT, Constants.AssetsMonsters.SKELETON_SPEED, Constants.AssetsMonsters.SKELETON_NEXUS_DMG,
-        Constants.AssetsMonsters.SKELETON_HEALTH
+    SKELETON  (Main.getAssetManager().get(Constants.Paths.MonstersTexturesPath.SKELETON_TEXTURE),
+        Constants.AssetsMonsters.SKELETON_WIDTH, Constants.AssetsMonsters.SKELETON_HEIGHT, Constants.AssetsMonsters.SKELETON_SPEED,
+        Constants.AssetsMonsters.SKELETON_NEXUS_DMG, Constants.AssetsMonsters.SKELETON_HEALTH, Constants.AssetsMonsters.SKELETON_GOLD_LOOT,
+        Constants.AssetsMonsters.SKELETON_ESSENCE_LOOT, Constants.AssetsMonsters.SKELETON_MOMENTUM_LOOT
     );
 
     public final Texture texture;
@@ -23,8 +23,12 @@ public enum MonsterType {
     public float nexusDmg;
     public float maxHealth;
     public float currentHealth;
+    public float goldLoot;
+    public float essenceLoot;
+    public float momentumLoot;
 
-    MonsterType(Texture texture, float width, float height, float speed, int nexusDmg, float maxHealth) {
+    MonsterType(Texture texture, float width, float height, float speed, int nexusDmg, float maxHealth,
+                float goldLoot, float essenceLoot, float momentumLoot) {
         this.texture = texture;
         this.width = width;
         this.height = height;
@@ -32,6 +36,9 @@ public enum MonsterType {
         this.nexusDmg = nexusDmg;
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
+        this.goldLoot = goldLoot;
+        this.essenceLoot = essenceLoot;
+        this.momentumLoot = momentumLoot;
     }
 
     public Texture getTexture() {
@@ -92,5 +99,17 @@ public enum MonsterType {
 
     public void setCurrentHealth(float currentHealth) {
         this.currentHealth = currentHealth;
+    }
+
+    public float getGoldLoot() {
+        return goldLoot;
+    }
+
+    public float getEssenceLoot() {
+        return essenceLoot;
+    }
+
+    public float getMomentumLoot() {
+        return momentumLoot;
     }
 }

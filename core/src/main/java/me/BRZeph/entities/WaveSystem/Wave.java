@@ -1,6 +1,5 @@
 package me.BRZeph.entities.WaveSystem;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,95 +9,173 @@ import me.BRZeph.utils.enums.MonsterType;
 import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Wave {
-    private int waveNumber;
-    private int warriorCount;
-    private int skeletonCount;
-    private float warriorSpawnInterval; // in seconds
-    private float warriorClock;
-    private float skeletonSpawnInterval; // in seconds
-    private float skeletonClock;
-    private float waveClock; // to keep track of spawn time
-    private boolean isActive;
-    private List<Monster> monsters;
-    private List<Monster> monsterReachedEndList;
+    private List<SpawnRule> spawnRules;
+    private Map<MonsterType, List<SpawnBehavior>> behaviors;
+    private List<Monster> monsterList;
+    private List<Monster> monsterReachedEnd;
     private List<Monster> monsterDied;
+    private List<Node> path;
+    private List<SpawnRuleEndWave> endBehavior;
+    private float waveClock;
+    private boolean active;
 
-    public Wave(int waveNumber) {
-        this.waveNumber = waveNumber;
-        this.warriorCount = waveNumber * 2;
-        this.skeletonCount = waveNumber;
-        this.warriorSpawnInterval = 4f;
-        this.skeletonSpawnInterval = 2f;
-        this.waveClock = 0f;
-        this.warriorClock = 4;
-        this.skeletonClock = 4;
-        this.isActive = false;
-        this.monsters = new ArrayList<>();
-        this.monsterReachedEndList = new ArrayList<>();
+    public Wave(List<SpawnRule> spawnRules, Map<MonsterType, List<SpawnBehavior>> behaviors,
+                List<SpawnRuleEndWave> endBehavior, List<Node> path) {
+        this.spawnRules = spawnRules;
+        this.behaviors = behaviors;
+        this.waveClock = 0;
+        this.active = false;
+        this.monsterList = new ArrayList<>();
+        this.monsterReachedEnd = new ArrayList<>();
         this.monsterDied = new ArrayList<>();
-    }
-
-    public void start() {
-        isActive = true;
+        this.path = path;
+        this.endBehavior = endBehavior;
     }
 
     public void update(float delta) {
-//        GlobalUtils.consoleLog("Updating wave " + waveNumber);
-        if (!isActive) return;
+        if (active) {
+            waveClock += delta;
+            spawnMonsters(delta);
+            handleSpawnBehaviors();
 
-        waveClock += delta;
-        warriorClock += delta;
-        skeletonClock += delta;
-        GlobalUtils.consoleLog("active wave" + waveNumber);
-        // Spawn warriors
-        if (warriorClock >= warriorSpawnInterval && waveClock < 16) {
-            GlobalUtils.consoleLog("spawning monster");
-            monsters.add(new Monster(0, 0, MonsterType.ZOMBIE)); // Adjust position as necessary
-            warriorClock -= warriorSpawnInterval; // Reset timer
-        }
-
-        // Spawn skeletons
-        if (skeletonClock >= skeletonSpawnInterval && waveClock < 16) {
-            monsters.add(new Monster(0, 0, MonsterType.SKELETON)); // Adjust position as necessary
-            skeletonClock -= skeletonSpawnInterval; // Reset timer
-        }
-
-        // Check if all monsters are defeated
-        if (monsters.isEmpty() && waveClock > 30) {
-            isActive = false; // Wave is complete
-        }
-    }
-
-    public void render(SpriteBatch batch, float delta, List<Node> path, BitmapFont font, ShapeRenderer shapeRenderer, OrthographicCamera camera) {
-        for (Monster monster : monsters) {
-            monster.update(delta, path);
-            monster.render(batch, font, shapeRenderer, camera);
-            if (monster.isFinishedPath()){
-                monsterReachedEndList.add(monster);
+            if (!monsterList.isEmpty()) {
+                for (Monster monster : monsterList) {
+                    monster.update(delta, path);
+                    if (monster.isFinishedPath()){
+                        monsterReachedEnd.add(monster);
+                    } else if (monster.getCurrentHealth() <= 0){
+                        monsterDied.add(monster);
+                    }
+                }
             }
         }
     }
 
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer){
+        for (Monster monster : monsterList) {
+            monster.render(batch, font, shapeRenderer);
+        }
+    }
+
+    private void handleSpawnBehaviors() {
+        for (SpawnRule rule : spawnRules) {
+            MonsterType type = rule.getMonsterType();
+
+            if (!behaviors.containsKey(type)) {
+                continue;
+            }
+            for (int i = 0; i < behaviors.get(type).size(); i++){
+                SpawnBehavior behavior = behaviors.get(type).get(i);
+
+                if (waveClock < behavior.getTriggerTime()) {
+                    continue;
+                }
+                if (!behavior.isBehaviorApplied()) {
+                    rule.setSpawnInterval(behavior.getNewInterval());
+                    rule.setAmountPerSpawn(behavior.getAmountPerSpawn());
+                    behavior.setBehaviorApplied(true);
+                }
+                if (i != behaviors.get(type).size() - 1) {
+                    continue;
+                }// this is here to make sure that all behaviors have been applied
+
+
+
+                // ruleEndWave.
+                for (SpawnRuleEndWave ruleEndWave : endBehavior){
+                    if (ruleEndWave.getMonsterType() != type) {
+                        continue;
+                    }
+
+                    if (!ruleEndWave.isAppliedBehavior() && waveClock > ruleEndWave.getStartTime()) {
+                        rule.setSpawnInterval(ruleEndWave.getSpawnInterval());
+                        rule.setAmountPerSpawn(ruleEndWave.getAmountPerSpawn());
+                        ruleEndWave.setAppliedBehavior(true);
+                        break;
+                    }
+
+                    if (waveClock > ruleEndWave.getTimeLimit()){
+                        ruleEndWave.setEndBehavior(true);
+                        rule.setSpawnInterval(100000);
+                    }
+                }
+            }
+        }
+        boolean endWave = true;
+        for (SpawnRuleEndWave ruleEndWave : endBehavior){
+            if (!ruleEndWave.isEndBehavior()) {
+                endWave = false;
+            }
+        }
+        if (endWave && monsterList.isEmpty()) {
+            GlobalUtils.consoleLog("Ending wave at " + waveClock);
+            active = false;
+        }
+    }
+
+    private void spawnMonsters(float delta) {
+        for (SpawnRule rule : spawnRules) {
+            rule.setRuleClock(rule.getRuleClock() + delta);
+            MonsterType type = rule.getMonsterType();
+
+            if (rule.isFirstSpawn()){
+                if (waveClock > rule.getStartTime()){
+                    rule.setRuleClock(0);
+                    rule.setFirstSpawn(false);
+                    if (type == MonsterType.SKELETON){
+                        GlobalUtils.consoleLog("Starting spawnInterval of skeleton at " + waveClock);
+                        GlobalUtils.consoleLog(waveClock + ">" + rule.getStartTime());
+                    }
+                } else {
+                    break;
+                }
+            }
+            if (rule.getRuleClock() - rule.getSpawnInterval() > 0 && !rule.isFirstSpawn()) {
+                rule.setRuleClock(0);
+                for (int i = 0; i < rule.getAmountPerSpawn(); i++) {
+                    if (type == MonsterType.SKELETON){
+                        GlobalUtils.consoleLog("Spawning skeleton at " + waveClock);
+                    }
+                    monsterList.add(new Monster(path.get(0).x, path.get(0).y, type));
+                }
+            }
+        }
+    }
+
+    public void end() {
+        this.active = false;
+    }
+
+    public void start() {
+        this.active = true;
+    }
+
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public float getWaveClock() {
         return waveClock;
     }
 
-    public List<Monster> getMonsters() {
-        return monsters;
+    public List<SpawnRule> getSpawnRules() {
+        return spawnRules;
+    }
+
+    public List<Monster> getMonsterList() {
+        return monsterList;
+    }
+
+    public List<Monster> getMonsterReachedEnd() {
+        return monsterReachedEnd;
     }
 
     public List<Monster> getMonsterDied() {
         return monsterDied;
-    }
-
-    public List<Monster> getMonsterReachedEndList() {
-        return monsterReachedEndList;
     }
 }

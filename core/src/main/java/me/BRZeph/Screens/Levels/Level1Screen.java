@@ -16,13 +16,19 @@ import com.badlogic.gdx.math.Matrix4;
 import me.BRZeph.Main;
 import me.BRZeph.core.ScreenManager;
 import me.BRZeph.core.LevelAssetsManager;
+import me.BRZeph.core.StaticGridButtonUI;
+import me.BRZeph.core.WorldGridButtonUI;
 import me.BRZeph.entities.Map.TileMap;
+import me.BRZeph.entities.Map.TileType;
 import me.BRZeph.entities.Monster;
 import me.BRZeph.entities.Player;
+import me.BRZeph.entities.Towers.PlacedTower;
+import me.BRZeph.entities.Towers.TowerManager;
 import me.BRZeph.entities.WaveSystem.WaveManager;
+import me.BRZeph.entities.currency.CurrencyManager;
 import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.enums.MonsterType;
+import me.BRZeph.utils.enums.TowerType;
 import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.ArrayList;
@@ -39,18 +45,20 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private Texture backgroundTexture;
     private Texture towerMenuTexture;
     private Texture heartTexture;
+    private Texture testButtonTexture;
+
+    private List<StaticGridButtonUI> staticButtonList;
+    private List<WorldGridButtonUI> worldButtonList;
     private TileMap tileMap;
     private Player player;
     private WaveManager waveManager;
+    private TowerManager towerManager;
+    private CurrencyManager currencyManager;
 
     private float screenClock;
-    private float waveClock;
     private float mapWidth = 1024;
     private float mapHeight = 1024;
-    private boolean showPath;
-    private List<Monster> monsterList;
-    private List<Monster> monsterReachedEndList;
-    private List<Monster> monsterDied;
+    private boolean debug;
     private float playerMaxHealth;
     private float playerCurrentHealth;
 
@@ -63,40 +71,58 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         orthographicCamera.setToOrtho(false, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         font = new BitmapFont();
         glyphLayout = new GlyphLayout();
+        staticButtonList = new ArrayList<>();
+        worldButtonList = new ArrayList<>();
 
         loadAssets();
+        initializeButtons();
 
-        showPath = false;
-        monsterList = new ArrayList<>();
-        monsterReachedEndList = new ArrayList<>();
-        monsterDied = new ArrayList<>();
+        debug = false;
         player = new Player(0, 0, 50);
         tileMap = new TileMap(Constants.Paths.MapsPath.LEVEL_1_MAP,
             Constants.AssetsTiles.TILE_WIDTH, Constants.AssetsTiles.TILE_HEIGHT);
         tileMap.loadMapAndFindPath(Constants.Paths.MapsPath.LEVEL_1_MAP);
-        waveManager = new WaveManager(10);
+        waveManager = new WaveManager(Constants.WaveValues.getLevel1Waves(tileMap.getPath()));
+        towerManager = new TowerManager();
+        this.currencyManager = new CurrencyManager();
 
         playerMaxHealth = Constants.Values.PlayerValues.LEVEL_1_PLAYER_HEALTH;
         playerCurrentHealth = playerMaxHealth;
     }
 
     /*
+    PRIORITY:
+    1- (DONE): make currency system.
+    2- make background UI for the "TOWER_MENU_UI" and implement it with a scrollable bar.
+    3- finish towers system.
+
+    TO CONSIDER:
+    1- consider removing the TowerType class since it's currently useless.
+
     TO IMPROVE:
     1- make the path finding algorithm more optimized, try version 3 of level 1 map (third map in the level_2_map.txt).
+    2- make a better currency system (Values.CurrencyTypes). Consider making individual classes for each.
+    3- make PlacedTower class abstract and every tower such as ARCHER_TOWER an implementation of PlacedTower.
+    4- (DONE): improve wave system so that the wave can end at some point, consider adding a "finalBehavior" with a duration.
 
     TO FIX:
     1- fix issue that is caused by a map not having a path.
     2- (DONE): fix issue of monster not following the path. Maybe the path is being defined wrongly due to the map load with the Y axis inverted?
-    3- fix GlobalUtils.adjustTextWidth();
+    3- fix GlobalUtils.adjustTextWidth().
+    4- (DONE): fix the Map of behaviors not working with more than 1 behavior (see line 151 of constants.java).
+    5- fix inverted Y position on TileMap.Render().
 
     TO IMPLEMENT:
-    1- implement player (green square for now) with movement. DONE.
+    1- (DONE) implement player (green square for now) with movement.
     2- implement button for starting the wave with hotkey. "DONE" by using L to start the wave.
-    3- implement clock during the wave.
-    4- implement wave count ("Wave 4/30").
+    3- (DONE) implement clock during the wave.
+    4- (DONE) implement wave count ("Wave 4/30").
     5- implement game mechanics (towers, monsters and so on).
-    6- implement a better system for defining what will spawn when in each wave of each level.
+    6- (DONE) implement a better system for defining what will spawn when in each wave of each level.
     7- implement "coin system", whenever the monsters die, the player should receive "coin" currency.
+    8- implement monster death generating coins and so on in updateWave().
+    9- implement PlacedTower.update().
+    10- implement endOfLevel() which happens when the last wave ends or the player dies or the player quits.
      */
 
     @Override
@@ -107,6 +133,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         backgroundTexture = assetManager.get(Constants.Paths.ScreensTexturesPath.LEVEL_1_BACKGROUND);
         towerMenuTexture = assetManager.get(Constants.Paths.UIPath.TOWER_MENU_UI);
         heartTexture = assetManager.get(Constants.Paths.UIPath.HEART_UI);
+        testButtonTexture = assetManager.get(Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH, Texture.class);
     }
 
     @Override
@@ -123,57 +150,45 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         screenClock += delta;
 
         updatePlayer(delta);
+        updateStaticButtons();
         updateCamera();
         updateWave(delta);
+        updateTowers(delta);
 
-        renderTileMap();
+        renderTileMap(); //this also render the towers, there is no need to call "tower.render()" or whatever.
+        renderWave();
         renderPath();
-        renderWave(delta);
         renderUI();
         renderPlayer();
-
-
-
-
-
-        handleMonster(delta);
-
-        //REMOVE THIS LATER.
-        handleMonsterRemoveLater(delta);
     }
 
-    private void handleMonster(float delta) {
-        for (Monster monster : waveManager.getCurrentWave().getMonsterDied()){
-            waveManager.getCurrentWave().getMonsters().remove(monster);
-        }
-        for (Monster monster : waveManager.getCurrentWave().getMonsterReachedEndList()){
-            playerCurrentHealth -= monster.getType().getNexusDmg();
-            waveManager.getCurrentWave().getMonsters().remove(monster);
-        }
-        waveManager.getCurrentWave().getMonsterDied().clear();
-        waveManager.getCurrentWave().getMonsterReachedEndList().clear();
+    private void initializeButtons() {
+        staticButtonList.add(new StaticGridButtonUI(100, 100, 200, 100, testButtonTexture, () -> {
+            waveManager.startNextWave();
+            GlobalUtils.consoleLog("Clicked button :D");
+        }));
     }
 
-    private void handleMonsterRemoveLater(float delta) {
-        for (Monster monster : monsterList){
-            monster.update(delta, tileMap.getPath());
-            monster.render(spriteBatch, font, shapeRenderer, orthographicCamera);
-            if (monster.getCurrentHealth() <= 0){
-                monsterDied.add(monster);
-            }
-            if (monster.isFinishedPath()){
-                monsterReachedEndList.add(monster);
+    private void updateStaticButtons() {
+        if (Gdx.input.justTouched()){
+            float mouseX = Gdx.input.getX();
+            float mouseY = Constants.SCREEN_HEIGHT - Gdx.input.getY();
+            for (StaticGridButtonUI staticButton : staticButtonList){
+                staticButton.checkClick(mouseX, mouseY);
             }
         }
-        for (Monster monster : monsterReachedEndList){
-            playerCurrentHealth -= monster.getType().getNexusDmg();
-            monsterList.remove(monster);
+    }
+
+    private void renderStaticButtons() {
+        for (StaticGridButtonUI staticButton : staticButtonList){
+            staticButton.render(spriteBatch);
         }
-        for (Monster monster : monsterDied){
-            monsterList.remove(monster);
+    }
+
+    private void updateTowers(float delta) {
+        for (PlacedTower tower : towerManager.getTowers()){
+            tower.update(delta);
         }
-        monsterReachedEndList.clear();
-        monsterDied.clear();
     }
 
     private void updatePlayer(float delta) {
@@ -195,18 +210,33 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void updateWave(float delta) {
         waveManager.update(delta);
-    }
 
-    private void renderWave(float delta){
-        waveManager.render(spriteBatch, delta, tileMap.getPath(), font, shapeRenderer, orthographicCamera);
+        List<Monster> reachedEnd = waveManager.getCurrentWave().getMonsterReachedEnd();
+        List<Monster> monstersAlive = waveManager.getCurrentWave().getMonsterList();
+        for (Monster monster : reachedEnd) {
+            playerCurrentHealth -= monster.getType().getNexusDmg();
+            monstersAlive.remove(monster);
+        }
+        reachedEnd.clear();
+        List<Monster> died = waveManager.getCurrentWave().getMonsterDied();
+        for (Monster monster : died) {
+            monstersAlive.remove(monster);
+            currencyManager.addMonsterLoot(monster.getType());
+            // IMPLEMENT MONSTER DEATH HERE.
+        }
+        died.clear();
     }
 
     private void renderTileMap(){
         tileMap.render(spriteBatch);
     }
 
+    private void renderWave() {
+        waveManager.render(spriteBatch, font, shapeRenderer);
+    }
+
     private void renderPath() {
-        if (showPath){
+        if (debug){
             List<Node> path = tileMap.getPath();
 
             if (path != null) {
@@ -247,8 +277,53 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         renderFPSUI();
         renderPlayerHealthUI();
         renderCurrentWaveUI();
+        renderCurrencyUI();
+        renderTipsUI(); //REMOVE LATER
+        renderStaticButtons();
 
         spriteBatch.setProjectionMatrix(originalProjection);
+    }
+
+    private void renderCurrencyUI() {
+        int width = Constants.Values.UIValues.CURRENCY_X_POS_DECREASE;
+        int startX = Constants.SCREEN_WIDTH - width - Constants.Values.UIValues.TOWER_MENU_WIDTH;
+        int startY = 100;
+        String message = "Gold -> " + currencyManager.getGold() + "\n" +
+                         "Essence -> " + currencyManager.getEssence() + "\n" +
+                         "Momentum -> " + currencyManager.getMomentum();
+
+        float originalScaleX = font.getData().scaleX;
+        float originalScaleY = font.getData().scaleY;
+        font.getData().setScale(2f);
+
+        spriteBatch.begin();
+        spriteBatch.setColor(Color.WHITE);
+        font.draw(spriteBatch, message, startX, startY);
+        spriteBatch.end();
+
+        font.getData().setScale(originalScaleX, originalScaleY);
+    }
+
+    private void renderTipsUI() {
+        /*
+        M -> start wave
+        F6 -> toggle debug
+        F7 -> main menu
+        F8 -> deal 1 dmg to all spawned monsters.
+        F10 -> change tile type.
+         */
+        if (debug) {
+            float startX = 10;
+            float startY = 500;
+            String message = "M -> start wave \n" +
+                "F6 -> toggle debug \n" +
+                "F7 -> main menu \n" +
+                "F8 -> deal 1 dmg to mobs";
+            spriteBatch.begin();
+            spriteBatch.setColor(Color.WHITE);
+            font.draw(spriteBatch, message, startX, startY);
+            spriteBatch.end();
+        }
     }
 
     private void renderCurrentWaveUI() {
@@ -259,7 +334,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         int minutes = (int)(waveClock/60);
         int seconds = (int)(waveClock - minutes*60);
 
-        String message = "Wave: " + waveManager.getCurrentWaveIndex() + "/" + waveManager.getTotalWaves();
+        String message = "Wave: " + (waveManager.getCurrentWaveIndex() + 1) + "/" + Constants.WaveValues.WAVE_1_MAX_WAVE;
 
         float originalScaleX = font.getData().scaleX;
         float originalScaleY = font.getData().scaleY;
@@ -375,38 +450,32 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         float zoomAmount = amountY * Constants.CameraValues.CAMERA_ZOOM_SPEED;
         orthographicCamera.zoom += zoomAmount;
 
-        // Clamp the zoom level using your constants
         orthographicCamera.zoom = Math.max(
             Constants.CameraValues.CAMERA_MIN_ZOOM,
             Math.min(Constants.CameraValues.CAMERA_MAX_ZOOM, orthographicCamera.zoom)
         );
-        return true; // Indicates that the event was handled
+        return true;
     }
-
+private int tileCount = 0;
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.L) {
-//            waveManager.startNextWave();
-            if (monsterList.size() % 2 == 0) {
-                monsterList.add(new Monster(tileMap.getPathStartPointX(), tileMap.getPathStartPointY(), MonsterType.ZOMBIE));
-            } else {
-                monsterList.add(new Monster(tileMap.getPathStartPointX(), tileMap.getPathStartPointY(), MonsterType.SKELETON));
-            }
-            return true;
-        }
         if (keycode == Input.Keys.M){
             waveManager.startNextWave();
         }
         if (keycode == Input.Keys.F6) {
-            showPath = !showPath;
+            debug = !debug;
         }
         if (keycode == Input.Keys.F7) {
             Main.getScreenManager().showMainMenu();
         }
         if (keycode == Input.Keys.F8){
-            for (Monster monster : monsterList){
+            for (Monster monster : waveManager.getCurrentWave().getMonsterList()){
                 monster.setCurrentHealth(monster.getCurrentHealth() - 1);
             }
+        }
+        if (keycode == Input.Keys.F10){
+            towerManager.placeTower(tileMap, TileType.ARCHER_TOWER, TowerType.ARCHER, tileCount, 2);
+            tileCount++;
         }
         return false;
     }

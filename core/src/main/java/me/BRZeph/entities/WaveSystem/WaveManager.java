@@ -1,62 +1,60 @@
 package me.BRZeph.entities.WaveSystem;
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.List;
 
 public class WaveManager {
+    private List<Wave> waves;
     private int currentWaveIndex;
-    private int totalWaves;
-    private Wave[] waves;
     private boolean canStartNewWave;
+    private boolean firstWave;
 
-    public WaveManager(int totalWaves) {
-        waves = new Wave[totalWaves];
-        for (int i = 0; i < totalWaves; i++) {
-            waves[i] = new Wave(i + 1);
-        }
-        currentWaveIndex = 0;
-        canStartNewWave = true;
-        this.totalWaves = totalWaves;
+    public WaveManager(List<Wave> waves) {
+        this.waves = waves;
+        this.currentWaveIndex = 0;
+        this.canStartNewWave = true;
+        this.firstWave = true;
     }
 
     public void update(float delta) {
-        if (currentWaveIndex < waves.length) {
-            waves[currentWaveIndex].update(delta);
-            if (!waves[currentWaveIndex].isActive()) {
-                canStartNewWave = true; // Allow starting the next wave
+        if (currentWaveIndex < waves.size()) {
+            Wave currentWave = waves.get(currentWaveIndex);
+            currentWave.update(delta);
+
+            if (!currentWave.isActive()) {
+                canStartNewWave = true;
             }
         }
     }
 
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer){
+        waves.get(currentWaveIndex).render(batch, font, shapeRenderer);
+    }
+
     public void startNextWave() {
-        if (canStartNewWave && currentWaveIndex < waves.length) {
-            currentWaveIndex++;
-            waves[currentWaveIndex].start();
+        if (canStartNewWave && currentWaveIndex < waves.size()) {
+            if (!firstWave) {
+                currentWaveIndex++;
+            } else {
+                firstWave = false;
+            }
+            waves.get(currentWaveIndex).start();
             canStartNewWave = false;
+            GlobalUtils.consoleLog("starting next wave " + currentWaveIndex);
         }
     }
 
-    public void render(SpriteBatch batch, float delta, List<Node> path, BitmapFont font, ShapeRenderer shapeRenderer, OrthographicCamera camera) {
-        if (currentWaveIndex < waves.length) {
-            waves[currentWaveIndex].render(batch, delta, path, font, shapeRenderer, camera);
-        }
+    public Wave getCurrentWave() {
+        return waves.get(currentWaveIndex);
     }
 
     public int getCurrentWaveIndex() {
         return currentWaveIndex;
-    }
-
-    public int getTotalWaves() {
-        return totalWaves;
-    }
-
-    public Wave getCurrentWave(){
-        return waves[currentWaveIndex];
     }
 }

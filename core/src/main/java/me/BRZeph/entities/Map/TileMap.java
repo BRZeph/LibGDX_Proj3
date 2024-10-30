@@ -3,8 +3,8 @@ package me.BRZeph.entities.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.Main;
+import me.BRZeph.entities.Towers.PlacedTower;
 import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
 import me.BRZeph.utils.pathFinding.Node;
@@ -31,6 +31,14 @@ public class TileMap {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.filePath = filePath;
+    }
+
+    public void changeTile(int x, int y, TileType tileType){
+        Tile oldTile = map[x][y];
+        map[x][y] = new Tile(tileType);
+        if (oldTile.isWalkable()){
+            createPath();
+        }
     }
 
     private void loadMap(String filePath) {
@@ -61,14 +69,17 @@ public class TileMap {
 
     public void loadMapAndFindPath(String filePath) {
         loadMap(filePath);
+        createPath();
 
+    }
+
+    private void createPath() {
         int startX = -1, startY = -1;
         int endX = -1, endY = -1;
 
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
                 Tile tile = map[y][x];
-//                if (tile.isStartingPoint()) {
 
                 //inverting the end point and start point, otherwise the path starts at the end point
 
@@ -77,7 +88,6 @@ public class TileMap {
                     pathStartPointY = y;
                     startX = x;
                     startY = y;
-//                } else if (tile.isEndingPoint()) {
                 } else if (tile.isStartingPoint()) {
                     pathEndPointX = x;
                     pathEndPointY = y;
@@ -253,5 +263,9 @@ public class TileMap {
 
     public List<Node> getPath() {
         return path;
+    }
+
+    public Tile[][] getMap() {
+        return map;
     }
 }

@@ -60,14 +60,13 @@ public class Monster {
             // Reached the target node
             currentNodeIndex++;
             if (currentNodeIndex >= path.size()) {
-                GlobalUtils.consoleLog("Monster reached the end of the path.");
                 finishedPath = true;
                 currentNodeIndex = path.size() - 1; // Keep it at the last node
             }
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, OrthographicCamera camera) {
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer) {
         float barWidth = Constants.Values.UIValues.HEALTH_BAR_WIDTH;
         float barHeight = Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
         float barX = getX() + type.getWidth()/2 - barWidth/2;
@@ -144,5 +143,9 @@ public class Monster {
 
     public void setCurrentHealth(float currentHealth) {
         this.currentHealth = currentHealth;
+    }
+
+    public void takeDamage(float dmg){
+        this.currentHealth -= dmg;
     }
 }
