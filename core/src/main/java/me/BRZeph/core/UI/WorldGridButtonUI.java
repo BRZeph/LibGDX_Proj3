@@ -1,4 +1,4 @@
-package me.BRZeph.core;
+package me.BRZeph.core.UI;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

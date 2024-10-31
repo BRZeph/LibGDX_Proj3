@@ -13,11 +13,14 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import me.BRZeph.Main;
 import me.BRZeph.core.ScreenManager;
 import me.BRZeph.core.LevelAssetsManager;
-import me.BRZeph.core.StaticGridButtonUI;
-import me.BRZeph.core.WorldGridButtonUI;
+import me.BRZeph.core.UI.ScrollableUI;
+import me.BRZeph.core.UI.StaticGridButtonUI;
+import me.BRZeph.core.UI.WorldGridButtonUI;
 import me.BRZeph.entities.Map.TileMap;
 import me.BRZeph.entities.Map.TileType;
 import me.BRZeph.entities.Monster;
@@ -42,13 +45,15 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private BitmapFont font;
     private GlyphLayout glyphLayout;
 
-    private Texture backgroundTexture;
     private Texture towerMenuTexture;
     private Texture heartTexture;
     private Texture testButtonTexture;
+    private Texture towerShopBackgroundTexture;
+    private Texture towerShopfrontTexture;
 
     private List<StaticGridButtonUI> staticButtonList;
     private List<WorldGridButtonUI> worldButtonList;
+    private List<ScrollableUI> scrollableUIList;
     private TileMap tileMap;
     private Player player;
     private WaveManager waveManager;
@@ -73,9 +78,11 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         glyphLayout = new GlyphLayout();
         staticButtonList = new ArrayList<>();
         worldButtonList = new ArrayList<>();
+        scrollableUIList = new ArrayList<>();
 
         loadAssets();
         initializeButtons();
+        initializeTowerShopUI();
 
         debug = false;
         player = new Player(0, 0, 50);
@@ -94,6 +101,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     PRIORITY:
     1- (DONE): make currency system.
     2- make background UI for the "TOWER_MENU_UI" and implement it with a scrollable bar.
+    2.1- give up on the idea of scrollable ui, create an ui will different pages.
     3- finish towers system.
 
     TO CONSIDER:
@@ -130,10 +138,11 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         LevelAssetsManager.loadCommonAssets(assetManager);
         LevelAssetsManager.loadSpecificAssets(1, assetManager);
 
-        backgroundTexture = assetManager.get(Constants.Paths.ScreensTexturesPath.LEVEL_1_BACKGROUND);
         towerMenuTexture = assetManager.get(Constants.Paths.UIPath.TOWER_MENU_UI);
         heartTexture = assetManager.get(Constants.Paths.UIPath.HEART_UI);
         testButtonTexture = assetManager.get(Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH, Texture.class);
+        towerShopBackgroundTexture = assetManager.get(Constants.Paths.UIPath.TOWER_SHOP_BACKGROUND_UI);
+        towerShopfrontTexture = assetManager.get(Constants.Paths.UIPath.TOWER_SHOP_FRONT_UI);
     }
 
     @Override
@@ -169,13 +178,59 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         }));
     }
 
+    private void renderShopUI(){
+        for (ScrollableUI scrollableUI : scrollableUIList){
+            scrollableUI.render(spriteBatch);
+        }
+    }
+
+    private void initializeTowerShopUI() {
+        int startX = Constants.SCREEN_WIDTH - Constants.Values.UIValues.TOWER_MENU_WIDTH;
+        int startY = Constants.SCREEN_HEIGHT - Constants.Values.UIValues.TOWER_MENU_HEIGHT;
+        int length = 64;
+
+        List<StaticGridButtonUI> buttons = new ArrayList<>();
+        int y = 0;
+        for (int i = 0; i < 16 ;i++){
+            int n = i;
+            if (i % 2 == 1) {
+                buttons.add(
+                    new StaticGridButtonUI(startX + 2*length, y*length, length, length, testButtonTexture, () -> {
+                        GlobalUtils.consoleLog("Clicked on button " + n);
+                    })
+                );
+            } else {
+                y++;
+                buttons.add(
+                    new StaticGridButtonUI(startX + length, y*length, length, length, testButtonTexture, () -> {
+                        GlobalUtils.consoleLog("Clicked on button " + n);
+                    })
+                );
+            }
+        }
+        scrollableUIList.add(new ScrollableUI(
+            startX, startY, startX + 250, Constants.SCREEN_HEIGHT, 2, 8,
+            64,64,5,
+            towerShopBackgroundTexture, towerShopfrontTexture, buttons
+        ));
+    }
+
     private void updateStaticButtons() {
+
         if (Gdx.input.justTouched()){
             float mouseX = Gdx.input.getX();
             float mouseY = Constants.SCREEN_HEIGHT - Gdx.input.getY();
+
+            for (ScrollableUI scrollableUI : scrollableUIList){
+                for (StaticGridButtonUI staticGridButtonUI : scrollableUI.getButtons()){
+                    staticGridButtonUI.checkClick(mouseX, mouseY);
+                }
+            }
+
             for (StaticGridButtonUI staticButton : staticButtonList){
                 staticButton.checkClick(mouseX, mouseY);
             }
+
         }
     }
 
@@ -273,7 +328,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         Matrix4 originalProjection = spriteBatch.getProjectionMatrix().cpy();
         spriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
-        renderTowerMenuUI();
+//        renderTowerMenuUI();
+        renderShopUI();
         renderFPSUI();
         renderPlayerHealthUI();
         renderCurrentWaveUI();
@@ -423,15 +479,6 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderPlayer() {
         player.render(shapeRenderer);
-    }
-
-    private void drawBackground() {
-        spriteBatch.begin();
-        spriteBatch.draw(backgroundTexture,
-            (float) -Constants.SCREEN_WIDTH /2,
-            (float) -Constants.SCREEN_HEIGHT /2,
-            Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
-        spriteBatch.end();
     }
 
     @Override

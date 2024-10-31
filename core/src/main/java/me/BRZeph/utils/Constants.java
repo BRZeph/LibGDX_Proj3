@@ -56,6 +56,8 @@ public class Constants {
         public static class UIPath {
             public static final String TOWER_MENU_UI = "Textures\\UI\\tower list for placement UI 001.png";
             public static final String HEART_UI = "Textures\\UI\\Heart 001.png";
+            public static final String TOWER_SHOP_BACKGROUND_UI = "Textures\\UI\\towerShop\\tower shop ui back 001.png";
+            public static final String TOWER_SHOP_FRONT_UI = "Textures\\UI\\towerShop\\tower shop ui front 001.png";
         }
     }
 

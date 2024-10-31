@@ -17,6 +17,8 @@ public class LevelAssetsManager {
         assetManager.load(Constants.Paths.UIPath.TOWER_MENU_UI, Texture.class);
         assetManager.load(Constants.Paths.UIPath.HEART_UI, Texture.class);
         assetManager.load(Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH, Texture.class);
+        assetManager.load(Constants.Paths.UIPath.TOWER_SHOP_BACKGROUND_UI, Texture.class);
+        assetManager.load(Constants.Paths.UIPath.TOWER_SHOP_FRONT_UI, Texture.class);
         assetManager.finishLoading();
     }
 
