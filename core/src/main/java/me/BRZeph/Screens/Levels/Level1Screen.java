@@ -133,9 +133,9 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     8- (DONE): implement monster death generating coins and so on in updateWave().
     9- (DONE): implement PlacedTower.update().
     10- (DONE): implement endOfLevel() which happens when the last wave ends or the player dies or the player quits.
-    11- implement "incomingDamage" mechanic to monster class.
-    11.1- when a tower shoots a monster, the incomingDamage value increases.
-    11.2- when a tower is deciding who to shoot, it should skip monsters with incomingDamage > currentHealth.
+    11- (QA): implement "incomingDamage" mechanic to monster class.
+    11.1- (QA): when a tower shoots a monster, the incomingDamage value increases.
+    11.2- (QA): when a tower is deciding who to shoot, it should skip monsters with incomingDamage > currentHealth.
      */
 
     @Override
@@ -177,6 +177,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         renderPath();
         renderUI();
         renderPlayer();
+
+//        renderTowerAttackCooldown();
     }
 
     private void renderUI() {
@@ -194,6 +196,12 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         renderTipsUI(); //REMOVE LATER
 
         spriteBatch.setProjectionMatrix(originalProjection);
+    }
+
+    private void renderTowerAttackCooldown(){
+        for (PlacedTower tower : towerManager.getTowers()){
+            tower.renderAttackCooldown(shapeRenderer);
+        }
     }
 
     private void renderTowerProjectiles() {

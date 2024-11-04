@@ -126,6 +126,22 @@ public class Monster {
         return (float) Math.sqrt(dx * dx + dy * dy); // Euclidean distance
     }
 
+    public float getIncomingDamage() {
+        return incomingDamage;
+    }
+
+    public void addIncomingDamage(float addIncomingDamage){
+        this.incomingDamage += addIncomingDamage;
+    }
+
+    public void subIncomingDamage(float subtractIncomingDamage){
+        this.incomingDamage -= subtractIncomingDamage;
+    }
+
+    public void setIncomingDamage(float incomingDamage) {
+        this.incomingDamage = incomingDamage;
+    }
+
     public int getNodesLeft() {
         return path.size() - currentNodeIndex; // Return the remaining nodes in the path
     }

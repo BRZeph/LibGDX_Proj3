@@ -19,7 +19,7 @@ public class FirstMonsterStrategy implements TargetingStrategy {
 
         // Gather candidates that have the minimum nodes left
         for (Monster monster : monstersInRange) {
-            if (monster.getNodesLeft() == minNodesLeft) {
+            if (monster.getNodesLeft() == minNodesLeft && monster.getIncomingDamage() < monster.getCurrentHealth()) {
                 candidates.add(monster);
             }
         }
@@ -37,7 +37,7 @@ public class FirstMonsterStrategy implements TargetingStrategy {
 
         for (Monster monster : monsters) {
             int nodesLeft = monster.getNodesLeft(); // Method to get nodes left for the monster
-            if (nodesLeft < minNodesLeft) {
+            if (nodesLeft < minNodesLeft && monster.getIncomingDamage() <= monster.getCurrentHealth()) {
                 minNodesLeft = nodesLeft; // Update to the new minimum
             }
         }

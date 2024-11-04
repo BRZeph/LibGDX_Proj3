@@ -90,7 +90,7 @@ public class Constants {
             public static final float ARCHER_TOWER_PRICE_MOMENTUM = 0;
             public static final float ARCHER_TOWER_DAMAGE = 4;
             public static final float ARCHER_TOWER_RANGE = 1000;
-            public static final float ARCHER_TOWER_ATTACK_COOLDOWN = 0.8f; //0.4 attacks per second
+            public static final float ARCHER_TOWER_ATTACK_COOLDOWN = 0.1f; //0.4 attacks per second
             public static final float ARCHER_TOWER_PROJECTILE_SPEED = 1600;
             public static final boolean ARCHER_TOWER_IS_AOE = false;
             public static final int TARGET_HIT_THRESHOLD = 20;
