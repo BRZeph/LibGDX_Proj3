@@ -1,6 +1,6 @@
 package me.BRZeph.entities.WaveSystem;
 
-import me.BRZeph.utils.enums.MonsterType;
+import me.BRZeph.entities.monster.MonsterType;
 
 public class SpawnRuleEndWave extends SpawnRule {
 

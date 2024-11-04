@@ -63,14 +63,13 @@ public class TileMap {
 
         map = new Tile[rows.size()][];
         for (int i = 0; i < rows.size(); i++) {
-            map[i] = rows.get(i);
+            map[i] = rows.get(rows.size() - 1 - i); // Invert Y-axis by reversing row order
         }
     }
 
     public void loadMapAndFindPath(String filePath) {
         loadMap(filePath);
         createPath();
-
     }
 
     private void createPath() {
@@ -100,15 +99,7 @@ public class TileMap {
         // Check if starting and ending points were found
         if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
             path = findPath();
-            if (path != null) {
-                // Process the found path (e.g., mark the tiles)
-                // Flips Y coordinates
-                for (Node node : path) {
-                    System.out.println("Path Tile: (" + node.x + ", " + node.y + ")");
-                    node.y = getHeight() / Constants.AssetsTiles.TILE_HEIGHT - node.y - 1;
-                }
-            } else {
-                // Call pathNotFound() method if no path was found
+            if (path == null) {
                 pathNotFound();
             }
         } else {
@@ -131,9 +122,7 @@ public class TileMap {
                 Tile tile = map[y][x];
                 if (tile != null) {
                     Texture texture = tile.getTexture();
-                    // Flipping the Y coordinate for rendering
-                    int flippedY = map.length - 1 - y; // Calculate the flipped Y position
-                    spriteBatch.draw(texture, x * tileWidth, flippedY * tileHeight, tileWidth, tileHeight);
+                    spriteBatch.draw(texture, x * tileWidth, y * tileHeight, tileWidth, tileHeight);
                 }
             }
         }
@@ -148,11 +137,21 @@ public class TileMap {
         return map.length * tileHeight;
     }
 
-    public Tile getTileAt(int x, int y) {
+    public Tile getTileAtMap(int x, int y) { // x and y are map coordinates.
         if (x < 0 || x >= map[0].length || y < 0 || y >= map.length) {
-            return null; // Out of bounds
+            return null;
         }
-        return map[y][x]; // Return the tile at the specified coordinates
+        return map[y][x];
+    }
+
+    public Tile getTileAtScreen(int screenX, int screenY){ // x and y are screen coordinates.
+        if (screenX < 0 || screenX >= map[0].length*tileWidth || screenY < 0 || screenY >= map.length*tileHeight){
+            return null;
+        } else {
+            int tileX = (int)(screenX/tileWidth);
+            int tileY = (int)(screenY/tileHeight);
+            return getTileAtMap(tileX, tileY);
+        }
     }
 
     public List<Node> findPath() {
@@ -267,5 +266,17 @@ public class TileMap {
 
     public Tile[][] getMap() {
         return map;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public int getTileHeight() {
+        return tileHeight;
     }
 }

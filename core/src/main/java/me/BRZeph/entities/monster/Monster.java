@@ -1,19 +1,19 @@
-package me.BRZeph.entities;
+package me.BRZeph.entities.monster;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import me.BRZeph.Main;
 import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.enums.MonsterType;
 import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.List;
+
+import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
+import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_WIDTH;
 
 public class Monster {
     private float x, y;
@@ -25,6 +25,7 @@ public class Monster {
     private boolean finishedPath;
     public float maxHealth;
     public float currentHealth;
+    private float incomingDamage;
 
     public Monster(float x, float y, MonsterType type) {
         this.x = x;
@@ -33,6 +34,19 @@ public class Monster {
         finishedPath = false;
         maxHealth = type.getMaxHealth();
         currentHealth = maxHealth;
+        incomingDamage = 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Monster{" +
+            "Position=(" + x + ", " + y + ")" +
+            ", Type=" + type +
+            ", MaxHealth=" + maxHealth +
+            ", CurrentHealth=" + currentHealth +
+            ", FinishedPath=" + finishedPath +
+            ", CurrentNodeIndex=" + currentNodeIndex +
+            '}';
     }
 
     public void update(float delta, List<Node> path) {
@@ -67,8 +81,8 @@ public class Monster {
     }
 
     public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer) {
-        float barWidth = Constants.Values.UIValues.HEALTH_BAR_WIDTH;
-        float barHeight = Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
+        float barWidth = HEALTH_BAR_WIDTH;
+        float barHeight = HEALTH_BAR_HEIGHT;
         float barX = getX() + type.getWidth()/2 - barWidth/2;
         float barY = getY() + type.getHeight() + 10;
 
@@ -86,6 +100,7 @@ public class Monster {
         shapeRenderer.rect(barX, barY, currentHealthWidth, barHeight);
         shapeRenderer.end();
 
+        // Health Bar.
         batch.begin();
         String healthText = getCurrentHealth() + " / " + getMaxHealth();
 
@@ -101,8 +116,34 @@ public class Monster {
         batch.end();
     }
 
+    public float calculateDistanceToNextNode() {
+        if (currentNodeIndex >= path.size()) return Float.MAX_VALUE; // No next node
+
+        Node nextNode = path.get(currentNodeIndex);
+        float dx = nextNode.x - x; // Assuming x is the current x position of the monster
+        float dy = nextNode.y - y; // Assuming y is the current y position of the monster
+
+        return (float) Math.sqrt(dx * dx + dy * dy); // Euclidean distance
+    }
+
+    public int getNodesLeft() {
+        return path.size() - currentNodeIndex; // Return the remaining nodes in the path
+    }
+
     public float getX() {
         return x;
+    }
+
+    public List<Node> getPath() {
+        return path;
+    }
+
+    public int getCurrentNodeIndex() {
+        return currentNodeIndex;
+    }
+
+    public void setCurrentNodeIndex(int currentNodeIndex) {
+        this.currentNodeIndex = currentNodeIndex;
     }
 
     public void setX(float x) {
@@ -141,8 +182,8 @@ public class Monster {
         return currentHealth;
     }
 
-    public void setCurrentHealth(float currentHealth) {
-        this.currentHealth = currentHealth;
+    public void setCurrentHealth(float newCurrentHealth) {
+        this.currentHealth = newCurrentHealth;
     }
 
     public void takeDamage(float dmg){

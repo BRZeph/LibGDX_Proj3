@@ -1,11 +1,11 @@
-package me.BRZeph.entities.currency;
+package me.BRZeph.core;
 
-import me.BRZeph.utils.enums.MonsterType;
+import me.BRZeph.entities.monster.MonsterType;
 
 public class CurrencyManager {
-    private float gold;
-    private float essence;
-    private float momentum;
+    private float gold;     // CurrencyType = 0.
+    private float essence;  // CurrencyType = 1.
+    private float momentum; // CurrencyType = 2.
 
     public CurrencyManager() {
         this.gold = 0;
@@ -37,7 +37,7 @@ public class CurrencyManager {
         return momentum;
     }
 
-    public boolean spendGold(int amount) {
+    public boolean spendGold(float amount) {
         if (gold >= amount) {
             gold -= amount;
             return true;
@@ -45,7 +45,7 @@ public class CurrencyManager {
         return false;
     }
 
-    public boolean spendEssence(int amount) {
+    public boolean spendEssence(float amount) {
         if (essence >= amount) {
             essence -= amount;
             return true;
@@ -53,7 +53,7 @@ public class CurrencyManager {
         return false;
     }
 
-    public boolean spendMomentum(int amount) {
+    public boolean spendMomentum(float amount) {
         if (momentum >= amount) {
             momentum -= amount;
             return true;

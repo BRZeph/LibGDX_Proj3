@@ -4,7 +4,7 @@ import me.BRZeph.entities.WaveSystem.SpawnBehavior;
 import me.BRZeph.entities.WaveSystem.SpawnRule;
 import me.BRZeph.entities.WaveSystem.SpawnRuleEndWave;
 import me.BRZeph.entities.WaveSystem.Wave;
-import me.BRZeph.utils.enums.MonsterType;
+import me.BRZeph.entities.monster.MonsterType;
 import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.List;
@@ -34,7 +34,9 @@ public class Constants {
         }
 
         public static class TowersTexturesPath {
-            public static final String ARCHER_TOWER = "Textures\\Towers\\Archer_tower.png";
+            public static final String ARCHER_TOWER_PLACED = "Textures\\Towers\\Archer_tower.png";
+            public static final String ARCHER_TOWER_ITEM = "Textures\\Towers\\Archer_tower_item.png";
+            public static final String ARCHER_TOWER_PROJECTILE = "Textures\\Towers\\Archer_tower_projectile.png";
         }
 
         public static class MonstersTexturesPath {
@@ -58,6 +60,7 @@ public class Constants {
             public static final String HEART_UI = "Textures\\UI\\Heart 001.png";
             public static final String TOWER_SHOP_BACKGROUND_UI = "Textures\\UI\\towerShop\\tower shop ui back 001.png";
             public static final String TOWER_SHOP_FRONT_UI = "Textures\\UI\\towerShop\\tower shop ui front 001.png";
+            public static final String SELECTED_TOWER_BACKGROUND = "Textures\\UI\\SelectedTower\\selected tower background 001.png";
         }
     }
 
@@ -65,6 +68,8 @@ public class Constants {
 
         public static class PlayerValues {
             public static final float LEVEL_1_PLAYER_HEALTH = 10;
+            public static final float HOLDING_ITEM_WIDTH = 48;
+            public static final float HOLDING_ITEM_HEIGHT = 48;
         }
 
 //        public static class CurrencyTypes {
@@ -77,16 +82,26 @@ public class Constants {
 //        }
 
         public static class TowerValues {
-            public static final float ARCHER_TOWER_PRICE = 5;
-            public static final int ARCHER_TOWER_PRICE_COIN = 0; // read currencyTypes
-            public static final float ARCHER_TOWER_RANGE = 500;
-            public static final float ARCHER_TOWER_DAMAGE = 3;
-            public static final float ARCHER_TOWER_ATTACK_RATE = 0.4f; //0.4 attacks per second
+            //gold     -> CurrencyType = 0.
+            //essence  -> CurrencyType = 1.
+            //momentum -> CurrencyType = 2.
+            public static final float ARCHER_TOWER_PRICE_GOLD = 5;
+            public static final float ARCHER_TOWER_PRICE_ESSENCE = 0;
+            public static final float ARCHER_TOWER_PRICE_MOMENTUM = 0;
+            public static final float ARCHER_TOWER_DAMAGE = 4;
+            public static final float ARCHER_TOWER_RANGE = 1000;
+            public static final float ARCHER_TOWER_ATTACK_COOLDOWN = 0.8f; //0.4 attacks per second
+            public static final float ARCHER_TOWER_PROJECTILE_SPEED = 1600;
+            public static final boolean ARCHER_TOWER_IS_AOE = false;
+            public static final int TARGET_HIT_THRESHOLD = 20;
+            public static final int PROJECTILE_WIDTH = 32;
+            public static final int PROJECTILE_HEIGHT = 32;
         }
 
         public static class UIValues {
-            public static final int TOWER_MENU_WIDTH = 240;
-            public static final int TOWER_MENU_HEIGHT = 980;
+            public static final int TOWER_SHOP_WIDTH = 250;
+            public static final int TOWER_SHOP_HEIGHT = 980;
+
             public static final int FPS_X_POS = 20;
             public static final int FPS_Y_POS_DECREASE = 20;
             public static final int FPS_WIDTH = 50;
@@ -108,8 +123,35 @@ public class Constants {
 
             public static final int CURRENCY_X_POS_DECREASE = 400;
 
+            public static final int TOWER_SHOP_GRIDX = 2;
+            public static final int TOWER_SHOP_GRIDY = 8;
+            public static final int TOWER_SHOP_ITEM_LENGTH = 64;
+
             public static class ButtonsValues {
                 public static final String TEST_BUTTON_TEXTURE_PATH = "Textures\\UI\\Buttons\\test button 001.png";
+
+                public static final int START_WAVE_BUTTON_X_POS = 100;
+                public static final int START_WAVE_BUTTON_Y_POS = 100;
+                public static final int START_WAVE_BUTTON_WIDTH = 200;
+                public static final int START_WAVE_BUTTON_HEIGHT = 100;
+            }
+
+            public static class SelectedTowerValues {
+                public static final int SELECTED_TOWER_UI_WIDTH = 350;
+                public static final int SELECTED_TOWER_UI_HEIGHT = 600;
+                public static final int SELECTED_TOWER_X_POS = Constants.SCREEN_WIDTH - UIValues.TOWER_SHOP_WIDTH - SelectedTowerValues.SELECTED_TOWER_UI_WIDTH;
+                public static final int SELECTED_TOWER_Y_POS = (Constants.SCREEN_HEIGHT - SelectedTowerValues.SELECTED_TOWER_UI_HEIGHT)/2;
+
+                public static final int TOWER_TEXTURE_X_POS = SELECTED_TOWER_X_POS + 61;
+                public static final int TOWER_TEXTURE_Y_POS = SELECTED_TOWER_Y_POS + SELECTED_TOWER_UI_HEIGHT - 138;
+                public static final int TOWER_TEXTURE_WIDTH = 78;
+                public static final int TOWER_TEXTURE_HEIGHT = 78;
+
+                public static final int TOWER_RANGE_X_POS = SELECTED_TOWER_X_POS + 30;
+                public static final int TOWER_RANGE_Y_POS = TOWER_TEXTURE_Y_POS - 30;
+
+                public static final int TOWER_DAMAGE_X_POS = SELECTED_TOWER_X_POS + 30;
+                public static final int TOWER_DAMAGE_Y_POS = TOWER_RANGE_Y_POS - 30;
             }
         }
     }
@@ -121,18 +163,18 @@ public class Constants {
         public static final int ZOMBIE_HEIGHT = 32;
         public static final int ZOMBIE_SPEED = 100;
         public static final int ZOMBIE_NEXUS_DMG = 1;
-        public static final float ZOMBIE_GOLD_LOOT = 3;
-        public static final float ZOMBIE_ESSENCE_LOOT = 3;
-        public static final float ZOMBIE_MOMENTUM_LOOT = 3;
+        public static final float ZOMBIE_GOLD_LOOT = 5;
+        public static final float ZOMBIE_ESSENCE_LOOT = 0;
+        public static final float ZOMBIE_MOMENTUM_LOOT = 1;
 
         public static final float SKELETON_HEALTH = 5;
         public static final int SKELETON_WIDTH = 32;
         public static final int SKELETON_HEIGHT = 32;
         public static final int SKELETON_SPEED = 200;
         public static final int SKELETON_NEXUS_DMG = 2;
-        public static final float SKELETON_GOLD_LOOT = 3;
-        public static final float SKELETON_ESSENCE_LOOT = 3;
-        public static final float SKELETON_MOMENTUM_LOOT = 3;
+        public static final float SKELETON_GOLD_LOOT = 5;
+        public static final float SKELETON_ESSENCE_LOOT = 1;
+        public static final float SKELETON_MOMENTUM_LOOT = 0;
     }
 
     // Player Assets Paths and Constants
@@ -150,7 +192,7 @@ public class Constants {
 
 
     public static class WaveValues {
-        public static final int WAVE_1_MAX_WAVE = 10;
+        public static final int LEVEL_1_MAX_WAVE = 10;
 
         // rules -> basic initial pattern of the wave.
         // behavior -> variance of the rule.
@@ -173,15 +215,15 @@ public class Constants {
         // Wave 1 Rules
         private static List<SpawnRule> getWave1Rules() {
             return List.of(
-                new SpawnRule(MonsterType.ZOMBIE, 1, -5f, 5f),
-                new SpawnRule(MonsterType.SKELETON, 1, 3f, 5f)
+                new SpawnRule(MonsterType.ZOMBIE, 1, 0, 1f),
+                new SpawnRule(MonsterType.SKELETON, 1, 0, 1f)
             );
         }
 
         private static Map<MonsterType, List<SpawnBehavior>> getWave1Behavior() {
             return Map.of(
                 MonsterType.ZOMBIE, List.of(
-                    new SpawnBehavior(5, 10.2f, 21f),
+                    new SpawnBehavior(1, 10.2f, 21f),
                     new SpawnBehavior(1, 15f, 1f)
                 ),
                 MonsterType.SKELETON, List.of(
@@ -192,8 +234,8 @@ public class Constants {
 
         private static List<SpawnRuleEndWave> getWave1EndWaveBehavior(){
             return List.of(
-                new SpawnRuleEndWave(MonsterType.ZOMBIE, 3, 20f, 0.1f, 35f),
-                new SpawnRuleEndWave(MonsterType.SKELETON, 3, 20f, 0.1f, 35f)
+                new SpawnRuleEndWave(MonsterType.ZOMBIE, 1, 20f, 0.1f, 35f),
+                new SpawnRuleEndWave(MonsterType.SKELETON, 1, 20f, 0.1f, 35f)
             );
         }
 

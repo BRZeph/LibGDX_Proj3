@@ -9,7 +9,7 @@ public enum TileType {
     WATER(Main.getAssetManager().get(Constants.Paths.TilesTexturesPath.WATER_TILE)),
     STARTING_POINT(Main.getAssetManager().get(Constants.Paths.TilesTexturesPath.STARTING_POINT)),
     ENDING_POINT(Main.getAssetManager().get(Constants.Paths.TilesTexturesPath.ENDING_POINT)),
-    ARCHER_TOWER(Main.getAssetManager().get(Constants.Paths.TowersTexturesPath.ARCHER_TOWER));
+    ARCHER_TOWER(Main.getAssetManager().get(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PLACED));
 
     public final Texture texture;
 
@@ -25,7 +25,7 @@ public enum TileType {
     }
 
     public boolean isBuildable() {
-        if (this == GRASS){
+        if (this == WATER){
             return true;
         }
         return false;
@@ -37,5 +37,9 @@ public enum TileType {
 
     public boolean isEndingPoint(){
         return this == ENDING_POINT;
+    }
+
+    public boolean isTurret() {
+        return this == ARCHER_TOWER;
     }
 }

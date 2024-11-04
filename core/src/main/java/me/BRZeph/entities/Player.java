@@ -6,20 +6,29 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import me.BRZeph.entities.Map.TileMap;
+import me.BRZeph.entities.Map.TileType;
+import me.BRZeph.entities.Towers.TowerItem;
 import me.BRZeph.utils.Constants;
 
 public class Player {
     private Vector2 position;
     private float range; // Interaction range
     private float speed; // Movement speed
+    private TowerItem holdingItem;
+    private TileType tileType;
+    private boolean isHoldingDownShift, isHoldingDownControl;
 
     public Player(float x, float y, float range) {
         this.position = new Vector2(x, y);
         this.range = range;
         this.speed = Constants.AssetsPlayer.PLAYER_SPEED;
+        this.holdingItem = null;
+        this.tileType = null;
+        this.isHoldingDownShift = false;
+        this.isHoldingDownControl = false;
     }
 
-    public void handleInput(float delta, TileMap tileMap){
+    public void handlePlayerMovement(float delta, TileMap tileMap){
         float newX = position.x;
         float newY = position.y;
 
@@ -65,10 +74,6 @@ public class Player {
         return range;
     }
 
-    public void move(float deltaX, float deltaY) {
-        position.add(deltaX * speed, deltaY * speed);
-    }
-
     public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.GREEN);
@@ -90,5 +95,37 @@ public class Player {
 
     public float getHeight(){
         return Constants.AssetsPlayer.PLAYER_HEIGHT;
+    }
+
+    public TowerItem getHoldingItem() {
+        return holdingItem;
+    }
+
+    public TileType getHoldingItemTileType(){
+        return tileType;
+    }
+
+    public void setTileType(TileType tileType) {
+        this.tileType = tileType;
+    }
+
+    public void setHoldingItem(TowerItem holdingItem) {
+        this.holdingItem = holdingItem;
+    }
+
+    public boolean isHoldingDownShift() {
+        return isHoldingDownShift;
+    }
+
+    public void setHoldingDownShift(boolean holdingDownShift) {
+        isHoldingDownShift = holdingDownShift;
+    }
+
+    public boolean isHoldingDownControl() {
+        return isHoldingDownControl;
+    }
+
+    public void setHoldingDownControl(boolean holdingDownControl) {
+        isHoldingDownControl = holdingDownControl;
     }
 }

@@ -13,12 +13,16 @@ public class LevelAssetsManager {
         assetManager.load(Constants.Paths.TilesTexturesPath.ENDING_POINT, Texture.class);
         assetManager.load(Constants.Paths.MonstersTexturesPath.ZOMBIE_TEXTURE, Texture.class);
         assetManager.load(Constants.Paths.MonstersTexturesPath.SKELETON_TEXTURE, Texture.class);
-        assetManager.load(Constants.Paths.TowersTexturesPath.ARCHER_TOWER, Texture.class);
+        assetManager.load(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PLACED, Texture.class);
         assetManager.load(Constants.Paths.UIPath.TOWER_MENU_UI, Texture.class);
         assetManager.load(Constants.Paths.UIPath.HEART_UI, Texture.class);
         assetManager.load(Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH, Texture.class);
         assetManager.load(Constants.Paths.UIPath.TOWER_SHOP_BACKGROUND_UI, Texture.class);
         assetManager.load(Constants.Paths.UIPath.TOWER_SHOP_FRONT_UI, Texture.class);
+        assetManager.load(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PLACED, Texture.class);
+        assetManager.load(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_ITEM, Texture.class);
+        assetManager.load(Constants.Paths.UIPath.SELECTED_TOWER_BACKGROUND, Texture.class);
+        assetManager.load(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PROJECTILE, Texture.class);
         assetManager.finishLoading();
     }
 

@@ -2,6 +2,8 @@ package me.BRZeph.utils;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import me.BRZeph.entities.Map.TileType;
+import me.BRZeph.entities.Towers.TowerType;
 
 public class GlobalUtils {
     public static void consoleLog(String log){
@@ -9,6 +11,25 @@ public class GlobalUtils {
         System.out.println(log);
         System.out.println("*************************");
     }
+
+    public static TowerType getTowerTypeFromTileType(TileType tileType){
+        switch (tileType){
+            case ARCHER_TOWER:
+                return TowerType.ARCHER;
+            default:
+                throw new IllegalArgumentException("Invalid argument -> " + tileType);
+        }
+    }
+
+    public static TileType getTileTypeFromTowerType(TowerType tileType){
+        switch (tileType){
+            case ARCHER:
+                return TileType.ARCHER_TOWER;
+            default:
+                throw new IllegalArgumentException("Invalid argument -> " + tileType);
+        }
+    }
+
     public static String adjustTextWidth(String message, float desiredWidth, BitmapFont font, GlyphLayout glyphLayout) {
         glyphLayout.setText(font, message);
         float textWidth = glyphLayout.width;

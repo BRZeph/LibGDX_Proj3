@@ -6,8 +6,9 @@ import me.BRZeph.entities.Towers.PlacedTower;
 public class Tile {
     private TileType type;
     private final TileType originalTileType; //use this to replace the tile when a tower is removed from the ground.
+    private int x, y;
 
-    public Tile(TileType type) {
+    public Tile(TileType type){
         this.type = type;
         this.originalTileType = type;
     }
@@ -42,5 +43,25 @@ public class Tile {
 
     public void setOriginalTileType(){
         type = originalTileType;
+    }
+
+    public void setType(TileType type) {
+        this.type = type;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }

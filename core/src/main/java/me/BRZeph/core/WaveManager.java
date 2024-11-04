@@ -1,10 +1,9 @@
-package me.BRZeph.entities.WaveSystem;
+package me.BRZeph.core;
 
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import me.BRZeph.entities.WaveSystem.Wave;
 import me.BRZeph.utils.GlobalUtils;
 
 import java.util.List;
@@ -46,7 +45,7 @@ public class WaveManager {
             }
             waves.get(currentWaveIndex).start();
             canStartNewWave = false;
-            GlobalUtils.consoleLog("starting next wave " + currentWaveIndex);
+            GlobalUtils.consoleLog("starting next wave " + (currentWaveIndex + 1));
         }
     }
 

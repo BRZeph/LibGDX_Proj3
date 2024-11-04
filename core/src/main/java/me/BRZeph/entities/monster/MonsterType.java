@@ -1,4 +1,4 @@
-package me.BRZeph.utils.enums;
+package me.BRZeph.entities.monster;
 
 import com.badlogic.gdx.graphics.Texture;
 import me.BRZeph.Main;

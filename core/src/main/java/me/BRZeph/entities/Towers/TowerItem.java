@@ -1,26 +1,65 @@
 package me.BRZeph.entities.Towers;
 
-import me.BRZeph.utils.Constants;
-import me.BRZeph.utils.enums.TowerType;
+import com.badlogic.gdx.graphics.Texture;
+import me.BRZeph.core.CurrencyManager;
 
 public class TowerItem {
     private TowerType type;
-    private int price;
+    private float goldPrice, essencePrice, momentumPrice;
 
     public TowerItem(TowerType type) {
         this.type = type;
-        this.price = TowerManager.getPrice(type);
+        this.goldPrice = getGoldPrice(type);
+        this.essencePrice = getEssencePrice(type);
+        this.momentumPrice = getMomentumPrice(type);
     }
 
-    public int getPrice() {
-        return price;
+    public static float getGoldPrice(TowerType type) {
+        return type.getGoldCost();
+    }
+
+    public static float getEssencePrice(TowerType type) {
+        return type.getEssenceCost();
+    }
+
+    public static float getMomentumPrice(TowerType type) {
+        return type.getMomentumCost();
     }
 
     public TowerType getType() {
         return type;
     }
 
-    public boolean canBeBought(int playerGold) {
-        return playerGold >= price;
+    public boolean canBeBought(float playerGold, float playerEssence, float playerMomentum) {
+        return playerGold >= goldPrice && playerEssence >= essencePrice && playerMomentum >= momentumPrice;
+    }
+
+    public boolean canBeBought(CurrencyManager currencyManager) {
+        return currencyManager.getGold() >= goldPrice && currencyManager.getEssence() >= essencePrice &&
+            currencyManager.getMomentum() >= momentumPrice;
+    }
+
+    public float getGoldPrice() {
+        return goldPrice;
+    }
+
+    public void setGoldPrice(float goldPrice) {
+        this.goldPrice = goldPrice;
+    }
+
+    public float getEssencePrice() {
+        return essencePrice;
+    }
+
+    public void setEssencePrice(float essencePrice) {
+        this.essencePrice = essencePrice;
+    }
+
+    public float getMomentumPrice() {
+        return momentumPrice;
+    }
+
+    public void setMomentumPrice(float momentumPrice) {
+        this.momentumPrice = momentumPrice;
     }
 }

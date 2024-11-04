@@ -3,13 +3,11 @@ package me.BRZeph.entities.WaveSystem;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import me.BRZeph.entities.Monster;
-import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.enums.MonsterType;
+import me.BRZeph.entities.monster.Monster;
+import me.BRZeph.entities.monster.MonsterType;
 import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,14 +41,15 @@ public class Wave {
             spawnMonsters(delta);
             handleSpawnBehaviors();
 
-            if (!monsterList.isEmpty()) {
-                for (Monster monster : monsterList) {
-                    monster.update(delta, path);
-                    if (monster.isFinishedPath()){
-                        monsterReachedEnd.add(monster);
-                    } else if (monster.getCurrentHealth() <= 0){
-                        monsterDied.add(monster);
-                    }
+            if (monsterList.isEmpty()) {
+                return;
+            }
+            for (Monster monster : monsterList) {
+                monster.update(delta, path);
+                if (monster.isFinishedPath()){
+                    monsterReachedEnd.add(monster);
+                } else if (monster.getCurrentHealth() <= 0){
+                    monsterDied.add(monster);
                 }
             }
         }
@@ -110,10 +109,10 @@ public class Wave {
         for (SpawnRuleEndWave ruleEndWave : endBehavior){
             if (!ruleEndWave.isEndBehavior()) {
                 endWave = false;
+                break;
             }
         }
         if (endWave && monsterList.isEmpty()) {
-            GlobalUtils.consoleLog("Ending wave at " + waveClock);
             active = false;
         }
     }
@@ -127,10 +126,6 @@ public class Wave {
                 if (waveClock > rule.getStartTime()){
                     rule.setRuleClock(0);
                     rule.setFirstSpawn(false);
-                    if (type == MonsterType.SKELETON){
-                        GlobalUtils.consoleLog("Starting spawnInterval of skeleton at " + waveClock);
-                        GlobalUtils.consoleLog(waveClock + ">" + rule.getStartTime());
-                    }
                 } else {
                     break;
                 }
@@ -138,9 +133,6 @@ public class Wave {
             if (rule.getRuleClock() - rule.getSpawnInterval() > 0 && !rule.isFirstSpawn()) {
                 rule.setRuleClock(0);
                 for (int i = 0; i < rule.getAmountPerSpawn(); i++) {
-                    if (type == MonsterType.SKELETON){
-                        GlobalUtils.consoleLog("Spawning skeleton at " + waveClock);
-                    }
                     monsterList.add(new Monster(path.get(0).x, path.get(0).y, type));
                 }
             }
