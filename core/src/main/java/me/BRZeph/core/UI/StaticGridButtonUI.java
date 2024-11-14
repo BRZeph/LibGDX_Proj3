@@ -12,6 +12,7 @@ public class StaticGridButtonUI { // Used for screen coordinates (static UI).
     private Runnable onClick; // Action to perform when the button is clicked
     private Runnable onHover; // Action to perform when the button is clicked
     private float x, y, width, height;
+    private boolean disable;
 
     public StaticGridButtonUI(float x, float y, float width, float height, Texture texture,
                               Runnable onClick, Runnable onHover) {
@@ -23,6 +24,7 @@ public class StaticGridButtonUI { // Used for screen coordinates (static UI).
         this.y = y;
         this.width = width;
         this.height = height;
+        this.disable = false;
     }
 
     public StaticGridButtonUI(Texture texture){
@@ -35,24 +37,31 @@ public class StaticGridButtonUI { // Used for screen coordinates (static UI).
     }
 
     public void render(SpriteBatch batch) {
+        if (disable) return;
         batch.begin();
         batch.draw(texture, bounds.x, bounds.y, bounds.width, bounds.height);
         batch.end();
     }
 
-    public void checkClick(float mouseX, float mouseY) {
+    public boolean checkClick(float mouseX, float mouseY) {
+        if (disable) return false;
         if (bounds.contains(mouseX, mouseY)) {
             onClick.run();
+            return true;
+        } else {
+            return false;
         }
     }
 
     public void checkHover(float mouseX, float mouseY){
+        if (disable) return;
         if (bounds.contains(mouseX, mouseY)){
             onHover.run();
         }
     }
 
     public void renderButtonInformationOnHover(SpriteBatch batch, BitmapFont font, String message){
+        if (disable) return;
         batch.begin();
         font.draw(batch, message, this.x + this.width, this.y + this.height/2);
         batch.end();
@@ -104,5 +113,13 @@ public class StaticGridButtonUI { // Used for screen coordinates (static UI).
 
     public void setOnHover(Runnable onHover) {
         this.onHover = onHover;
+    }
+
+    public boolean isDisable() {
+        return disable;
+    }
+
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 }

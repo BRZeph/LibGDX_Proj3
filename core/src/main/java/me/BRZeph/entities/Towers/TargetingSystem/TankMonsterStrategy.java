@@ -12,4 +12,8 @@ public class TankMonsterStrategy implements TargetingStrategy {
             .max(Comparator.comparingDouble(Monster::getCurrentHealth))
             .orElse(null);
     }
+    @Override
+    public String toString() {
+        return "Targetting system -> TankMonsterStrategy";
+    }
 }

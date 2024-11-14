@@ -37,6 +37,17 @@ import me.BRZeph.utils.pathFinding.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.MapsPath.LEVEL_1_MAP;
+import static me.BRZeph.utils.Constants.Paths.UIPath.*;
+import static me.BRZeph.utils.Constants.SCREEN_HEIGHT;
+import static me.BRZeph.utils.Constants.Values.PlayerValues.*;
+import static me.BRZeph.utils.Constants.Values.UIValues.ButtonsValues.*;
+import static me.BRZeph.utils.Constants.Values.UIValues.SelectedTowerValues.*;
+import static me.BRZeph.utils.Constants.Values.UIValues.TOWER_SHOP_HEIGHT;
+import static me.BRZeph.utils.Constants.Values.UIValues.TOWER_SHOP_WIDTH;
+import static me.BRZeph.utils.Constants.WaveValues.getLevel1Waves;
 import static me.BRZeph.utils.GlobalUtils.getTowerTypeFromTileType;
 
 public class Level1Screen extends BaseLevelScreen implements InputProcessor {
@@ -56,6 +67,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private List<StaticGridButtonUI> staticButtonList;
     private List<ScrollableUI> scrollableUIList;
+    private StaticGridButtonUI towerLeftAggroButton;
+    private StaticGridButtonUI towerRightAggroButton;
     private TileMap tileMap;
     private Player player;
     private WaveManager waveManager;
@@ -76,7 +89,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         orthographicCamera = new OrthographicCamera();
-        orthographicCamera.setToOrtho(false, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        orthographicCamera.setToOrtho(false, Constants.SCREEN_WIDTH, SCREEN_HEIGHT);
         font = new BitmapFont();
         glyphLayout = new GlyphLayout();
         staticButtonList = new ArrayList<>();
@@ -89,15 +102,14 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
         debug = false;
         player = new Player(0, 0, 50);
-        tileMap = new TileMap(Constants.Paths.MapsPath.LEVEL_1_MAP,
-            Constants.AssetsTiles.TILE_WIDTH, Constants.AssetsTiles.TILE_HEIGHT);
-        tileMap.loadMapAndFindPath(Constants.Paths.MapsPath.LEVEL_1_MAP);
-        waveManager = new WaveManager(Constants.WaveValues.getLevel1Waves(tileMap.getPath()));
+        tileMap = new TileMap(LEVEL_1_MAP, TILE_WIDTH, TILE_HEIGHT);
+        tileMap.loadMapAndFindPath(LEVEL_1_MAP);
+        waveManager = new WaveManager(getLevel1Waves(tileMap.getPath()));
         towerManager = new TowerManager();
         currencyManager = new CurrencyManager();
         currencyManager.addGold(300);
 
-        playerMaxHealth = Constants.Values.PlayerValues.LEVEL_1_PLAYER_HEALTH;
+        playerMaxHealth = LEVEL_1_PLAYER_HEALTH;
         playerCurrentHealth = playerMaxHealth;
     }
 
@@ -121,6 +133,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     3- fix GlobalUtils.adjustTextWidth().
     4- (DONE): fix the Map of behaviors not working with more than 1 behavior (see line 151 of constants.java).
     5- (DONE): fix inverted Y position on TileMap.Render().
+    6- (DONE): fix the targeting system resetting once the selectedTower is set to null.
+    7- fix map inversion.
 
     TO IMPLEMENT:
     1- (DONE): implement player (green square for now) with movement.
@@ -133,9 +147,9 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     8- (DONE): implement monster death generating coins and so on in updateWave().
     9- (DONE): implement PlacedTower.update().
     10- (DONE): implement endOfLevel() which happens when the last wave ends or the player dies or the player quits.
-    11- (QA): implement "incomingDamage" mechanic to monster class.
-    11.1- (QA): when a tower shoots a monster, the incomingDamage value increases.
-    11.2- (QA): when a tower is deciding who to shoot, it should skip monsters with incomingDamage > currentHealth.
+    11- (DONE): implement "incomingDamage" mechanic to monster class.
+    11.1- (DONE): when a tower shoots a monster, the incomingDamage value increases.
+    11.2- (DONE): when a tower is deciding who to shoot, it should skip monsters with incomingDamage > currentHealth.
      */
 
     @Override
@@ -143,12 +157,12 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         LevelAssetsManager.loadCommonAssets(assetManager);
         LevelAssetsManager.loadSpecificAssets(1, assetManager);
 
-        towerMenuTexture = assetManager.get(Constants.Paths.UIPath.TOWER_MENU_UI);
-        heartTexture = assetManager.get(Constants.Paths.UIPath.HEART_UI);
-        testButtonTexture = assetManager.get(Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH, Texture.class);
-        towerShopBackgroundTexture = assetManager.get(Constants.Paths.UIPath.TOWER_SHOP_BACKGROUND_UI);
-        towerShopfrontTexture = assetManager.get(Constants.Paths.UIPath.TOWER_SHOP_FRONT_UI);
-        selectedTowerBackgroundTexture = assetManager.get(Constants.Paths.UIPath.SELECTED_TOWER_BACKGROUND);
+        towerMenuTexture = assetManager.get(TOWER_MENU_UI);
+        heartTexture = assetManager.get(HEART_UI);
+        testButtonTexture = assetManager.get(TEST_BUTTON_TEXTURE_PATH, Texture.class);
+        towerShopBackgroundTexture = assetManager.get(TOWER_SHOP_BACKGROUND_UI);
+        towerShopfrontTexture = assetManager.get(TOWER_SHOP_FRONT_UI);
+        selectedTowerBackgroundTexture = assetManager.get(SELECTED_TOWER_BACKGROUND);
     }
 
     @Override
@@ -212,8 +226,10 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderSelectedTowerUI() {
         if (towerManager.getSelectedTower() != null){
-            int tileX = towerManager.getSelectedTower().getxPos();
-            int tileY = towerManager.getSelectedTower().getyPos();
+            towerLeftAggroButton.setDisable(false);
+            towerRightAggroButton.setDisable(false);
+            int tileY = towerManager.getSelectedTower().getxPos(); // For whatever reason this doesnt work if i dont invert
+            int tileX = towerManager.getSelectedTower().getyPos(); // the X and Y coordinates.
             int radius = (int) towerManager.getSelectedTower().getType().getRange(); // deleted this later.
             int centerX = tileX*tileMap.getTileWidth();
             int centerY = tileY*tileMap.getTileHeight();
@@ -225,20 +241,12 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             );
             Gdx.gl.glLineWidth(5);
             shapeRenderer.end();
-            Gdx.gl.glLineWidth(1); // resets line width.
+            Gdx.gl.glLineWidth(1);
 
             Texture towerTexture = towerManager.getSelectedTower().getType().getItemTexture();
-            int towerXPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_TEXTURE_X_POS;
-            int towerYPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_TEXTURE_Y_POS;
-            int width = Constants.Values.UIValues.SelectedTowerValues.TOWER_TEXTURE_WIDTH;
-            int height = Constants.Values.UIValues.SelectedTowerValues.TOWER_TEXTURE_HEIGHT;
             String towerRangeMessage = "Tower range: " + towerManager.getSelectedTower().getType().getRange();
-            int towerRangeXPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_RANGE_X_POS;
-            int towerRangeYPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_RANGE_Y_POS;
             String towerDamageMessage = "Tower damage: " + towerManager.getSelectedTower().getType().getDamage();
-            int towerDamageXPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_DAMAGE_X_POS;
-            int towerDamageYPos = Constants.Values.UIValues.SelectedTowerValues.TOWER_DAMAGE_Y_POS;
-
+            String towerAggroTypeMessage = "Tower aggro: \n" + towerManager.getSelectedTower().getTargetingStrategy();
 
             float originalScaleX = font.getData().scaleX;
             float originalScaleY = font.getData().scaleY;
@@ -246,25 +254,29 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             spriteBatch.begin();
             spriteBatch.draw(
                 selectedTowerBackgroundTexture,
-                Constants.Values.UIValues.SelectedTowerValues.SELECTED_TOWER_X_POS,
-                Constants.Values.UIValues.SelectedTowerValues.SELECTED_TOWER_Y_POS,
-                Constants.Values.UIValues.SelectedTowerValues.SELECTED_TOWER_UI_WIDTH,
-                Constants.Values.UIValues.SelectedTowerValues.SELECTED_TOWER_UI_HEIGHT
+                SELECTED_TOWER_X_POS,
+                SELECTED_TOWER_Y_POS,
+                SELECTED_TOWER_UI_WIDTH,
+                SELECTED_TOWER_UI_HEIGHT
                 );
-            spriteBatch.draw(towerTexture, towerXPos, towerYPos, width, height);
-            font.draw(spriteBatch, towerRangeMessage, towerRangeXPos, towerRangeYPos);
-            font.draw(spriteBatch, towerDamageMessage, towerDamageXPos, towerDamageYPos);
+            spriteBatch.draw(towerTexture, TOWER_TEXTURE_X_POS, TOWER_TEXTURE_Y_POS, TOWER_TEXTURE_WIDTH, TOWER_TEXTURE_HEIGHT);
+            font.draw(spriteBatch, towerRangeMessage, TOWER_RANGE_X_POS, TOWER_RANGE_Y_POS);
+            font.draw(spriteBatch, towerDamageMessage, TOWER_DAMAGE_X_POS, TOWER_DAMAGE_Y_POS);
+            font.draw(spriteBatch, towerAggroTypeMessage, TOWER_AGGRO_TEXT_X_POS, TOWER_AGGRO_TEXT_Y_POS);
             spriteBatch.end();
             font.getData().setScale(originalScaleX, originalScaleY);
+        } else {
+            towerLeftAggroButton.setDisable(true);
+            towerRightAggroButton.setDisable(true);
         }
     }
 
     private void renderHoldingItem() {
         if (player.getHoldingItem() != null) {
             float mouseXClick = Gdx.input.getX();
-            float mouseYClick = Constants.SCREEN_HEIGHT - Gdx.input.getY();
-            float width = Constants.Values.PlayerValues.HOLDING_ITEM_WIDTH;
-            float height = Constants.Values.PlayerValues.HOLDING_ITEM_HEIGHT;
+            float mouseYClick = SCREEN_HEIGHT - Gdx.input.getY();
+            float width = HOLDING_ITEM_WIDTH;
+            float height = HOLDING_ITEM_HEIGHT;
             spriteBatch.begin();
             spriteBatch.draw(
                 player.getHoldingItem().getType().getItemTexture(),
@@ -273,7 +285,6 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
                 );
             spriteBatch.end();
         }
-
     }
 
     private void checkPlaceTowerDown(){
@@ -320,12 +331,9 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     }
 
     private void initializeButtons() {
-        // Create a new button instance
         StaticGridButtonUI button = new StaticGridButtonUI(
-            Constants.Values.UIValues.ButtonsValues.START_WAVE_BUTTON_X_POS,
-            Constants.Values.UIValues.ButtonsValues.START_WAVE_BUTTON_Y_POS,
-            Constants.Values.UIValues.ButtonsValues.START_WAVE_BUTTON_WIDTH,
-            Constants.Values.UIValues.ButtonsValues.START_WAVE_BUTTON_HEIGHT,
+            START_WAVE_BUTTON_X_POS, START_WAVE_BUTTON_Y_POS,
+            START_WAVE_BUTTON_WIDTH, START_WAVE_BUTTON_HEIGHT,
             testButtonTexture,
             () -> {
                 waveManager.startNextWave();
@@ -337,7 +345,47 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         button.setOnHover(() -> {
             button.renderButtonInformationOnHover(spriteBatch, font, "Começar a wave");
         });
+
+         towerLeftAggroButton = new StaticGridButtonUI(
+            TOWER_AGGRO_LEFT_BUTTON_X_POS, TOWER_AGGRO_LEFT_BUTTON_Y_POS,
+            TOWER_AGGRO_LEFT_BUTTON_WIDTH, TOWER_AGGRO_LEFT_BUTTON_HEIGHT,
+            testButtonTexture,
+            () -> {
+//                towerManager.getSelectedTower().setPreviousTargetingStrategy();
+//                towerManager.getTowers().get(towerManager.getTowers().indexOf(towerManager.getSelectedTower())).setPreviousTargetingStrategy();
+                for (PlacedTower tower : towerManager.getTowers()){
+                    if (tower.getxPos() == towerManager.getSelectedTower().getxPos() &&
+                    tower.getyPos() == towerManager.getSelectedTower().getyPos()){
+                        tower.setPreviousTargetingStrategy();
+                        GlobalUtils.consoleLog("setting previous aggro");
+                        break;
+                    }
+                }
+            },
+            () -> {
+            }
+        );
+        towerLeftAggroButton.setOnHover(() -> {
+            towerLeftAggroButton.renderButtonInformationOnHover(spriteBatch, font, "Select previous aggro");
+        });
+
+        towerRightAggroButton = new StaticGridButtonUI(
+            TOWER_AGGRO_RIGHT_BUTTON_X_POS, TOWER_AGGRO_RIGHT_BUTTON_Y_POS,
+            TOWER_AGGRO_RIGHT_BUTTON_WIDTH, TOWER_AGGRO_RIGHT_BUTTON_HEIGHT,
+            testButtonTexture,
+            () -> {
+                towerManager.getSelectedTower().setNextTargetingStrategy();
+            },
+            () -> {
+            }
+        );
+        towerLeftAggroButton.setOnHover(() -> {
+            towerLeftAggroButton.renderButtonInformationOnHover(spriteBatch, font, "Select Next aggro");
+        });
+
         staticButtonList.add(button);
+        staticButtonList.add(towerLeftAggroButton);
+        staticButtonList.add(towerRightAggroButton);
     }
 
     private void renderShopUI(){
@@ -347,15 +395,15 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     }
 
     private void initializeTowerShopUI() {
-        int width = Constants.Values.UIValues.TOWER_SHOP_WIDTH;
-        int height = Constants.Values.UIValues.TOWER_SHOP_HEIGHT;
+        int width = TOWER_SHOP_WIDTH;
+        int height = TOWER_SHOP_HEIGHT;
         int startX = Constants.SCREEN_WIDTH - width;
-        int startY = Constants.SCREEN_HEIGHT - height;
+        int startY = SCREEN_HEIGHT - height;
 
         List<StaticGridButtonUI> buttons = getTowerShopButtonList();
 
         scrollableUIList.add(new ScrollableUI(
-            startX, startY, startX + width, Constants.SCREEN_HEIGHT,
+            startX, startY, startX + width, SCREEN_HEIGHT,
             Constants.Values.UIValues.TOWER_SHOP_GRIDX, Constants.Values.UIValues.TOWER_SHOP_GRIDY,
             Constants.Values.UIValues.TOWER_SHOP_ITEM_LENGTH,
             towerShopBackgroundTexture, towerShopfrontTexture, buttons
@@ -398,24 +446,30 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         return buyArcher;
     }
 
-    private void checkStaticButtonClick() {
+    private boolean checkStaticButtonClick() {
         float mouseXClick = Gdx.input.getX();
-        float mouseYClick = Constants.SCREEN_HEIGHT - Gdx.input.getY();
+        float mouseYClick = SCREEN_HEIGHT - Gdx.input.getY();
 
         for (ScrollableUI scrollableUI : scrollableUIList){
             for (StaticGridButtonUI staticGridButtonUI : scrollableUI.getButtons()){
-                staticGridButtonUI.checkClick(mouseXClick, mouseYClick);
+                if(staticGridButtonUI.checkClick(mouseXClick, mouseYClick)){
+                    return true;
+                }
             }
         }
 
         for (StaticGridButtonUI staticButton : staticButtonList){
-            staticButton.checkClick(mouseXClick, mouseYClick);
+            if (staticButton.checkClick(mouseXClick, mouseYClick)){
+                return true;
+            }
         }
+
+        return false;
     }
 
     private void renderStaticButtons() {
         float mouseXHover = Gdx.input.getX();
-        float mouseYHover = Constants.SCREEN_HEIGHT - Gdx.input.getY();
+        float mouseYHover = SCREEN_HEIGHT - Gdx.input.getY();
 
         for (ScrollableUI scrollableUI : scrollableUIList){
             for (StaticGridButtonUI staticGridButtonUI : scrollableUI.getButtons()){
@@ -443,7 +497,9 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private void handlePlayerClick() {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
-            checkStaticButtonClick();
+            if(checkStaticButtonClick()){
+                return;
+            }
 
             if (player.getHoldingItem() != null) {
                 checkPlaceTowerDown();
@@ -452,8 +508,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             }
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-        player.setHoldingItem(null);
-        towerManager.setSelectedTower(null);
+            player.setHoldingItem(null);
+            towerManager.setSelectedTower(null);
         }
     }
 
@@ -465,15 +521,18 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
         Tile tile = tileMap.getTileAtScreen((int) worldX, (int) worldY);
 
-        int tileY = (int)worldY/ tileMap.getTileWidth();
-        int tileX = (int)worldX/ tileMap.getTileHeight();
+        int tileX = (int)worldX/ tileMap.getTileWidth();
+        int tileY = (int)worldY/ tileMap.getTileHeight();
 
         if (tile == null) return;
 
         if (tile.getType().isTurret()){
-            towerManager.setSelectedTower(new PlacedTower(getTowerTypeFromTileType(tile.getType()),
-                tileX, tileY
-            ));
+            for (PlacedTower tower : towerManager.getTowers()){
+                if (tower.getxPos() == tileY &&
+                    tower.getyPos() == tileX){
+                    towerManager.setSelectedTower(tower);
+                }
+            }
         } else {
             towerManager.setSelectedTower(null);
         }
@@ -533,17 +592,17 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
                     // Draw a line from the current node to the next node
                     shapeRenderer.line(
-                        (float) ((0.5 + current.x) * Constants.AssetsTiles.TILE_WIDTH),
-                        (float) ((0.5 + current.y) * Constants.AssetsTiles.TILE_HEIGHT),
-                        (float) ((0.5 + next.x) * Constants.AssetsTiles.TILE_WIDTH),
-                        (float) ((0.5 + next.y) * Constants.AssetsTiles.TILE_HEIGHT)
+                        (float) ((0.5 + current.x) * TILE_WIDTH),
+                        (float) ((0.5 + current.y) * TILE_HEIGHT),
+                        (float) ((0.5 + next.x) * TILE_WIDTH),
+                        (float) ((0.5 + next.y) * TILE_HEIGHT)
                     );
                     shapeRenderer.end();
 
                     // Draw nodes count.
                     String message = "Node -> " + i;
                     spriteBatch.begin();
-                    font.draw(spriteBatch, message, (float)(0.5 + current.x) * Constants.AssetsTiles.TILE_WIDTH, (float)(0.5 + current.y) * Constants.AssetsTiles.TILE_HEIGHT);
+                    font.draw(spriteBatch, message, (float)(0.5 + current.x) * TILE_WIDTH, (float)(0.5 + current.y) * TILE_HEIGHT);
                     spriteBatch.end();
                 }
             } else {
@@ -554,7 +613,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderCurrencyUI() {
         int width = Constants.Values.UIValues.CURRENCY_X_POS_DECREASE;
-        int startX = Constants.SCREEN_WIDTH - width - Constants.Values.UIValues.TOWER_SHOP_WIDTH;
+        int startX = Constants.SCREEN_WIDTH - width - TOWER_SHOP_WIDTH;
         int startY = 100;
         String message = "Gold -> " + currencyManager.getGold() + "\n" +
                          "Essence -> " + currencyManager.getEssence() + "\n" +
@@ -599,8 +658,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderCurrentWaveUI() {
         int width = Constants.Values.UIValues.CURRENT_WAVE_WIDTH;
-        int startX = Constants.SCREEN_WIDTH - width - Constants.Values.UIValues.TOWER_SHOP_WIDTH;
-        int startY = Constants.SCREEN_HEIGHT - Constants.Values.UIValues.CURRENT_WAVE_HEIGHT_DECREASE;
+        int startX = Constants.SCREEN_WIDTH - width - TOWER_SHOP_WIDTH;
+        int startY = SCREEN_HEIGHT - Constants.Values.UIValues.CURRENT_WAVE_HEIGHT_DECREASE;
         float waveClock = waveManager.getCurrentWave().getWaveClock();
         int minutes = (int)(waveClock/60);
         int seconds = (int)(waveClock - minutes*60);
@@ -623,7 +682,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderFPSUI() {
         float startX = Constants.Values.UIValues.FPS_X_POS;
-        float startY = Constants.SCREEN_HEIGHT - Constants.Values.UIValues.FPS_Y_POS_DECREASE;
+        float startY = SCREEN_HEIGHT - Constants.Values.UIValues.FPS_Y_POS_DECREASE;
         float desiredWidth = Constants.Values.UIValues.FPS_WIDTH;
         float fps = Gdx.graphics.getFramesPerSecond();
         String message = "FPS: " + (int) fps;
@@ -638,7 +697,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void renderPlayerHealthUI() {
         float startX = Constants.Values.UIValues.HEALTH_X_POS;
-        float startY = Constants.SCREEN_HEIGHT - Constants.Values.UIValues.HEALTH_Y_POS_DECREASE;
+        float startY = SCREEN_HEIGHT - Constants.Values.UIValues.HEALTH_Y_POS_DECREASE;
         float desiredWidth = Constants.Values.UIValues.HEALTH_WIDTH;
 
         spriteBatch.begin();

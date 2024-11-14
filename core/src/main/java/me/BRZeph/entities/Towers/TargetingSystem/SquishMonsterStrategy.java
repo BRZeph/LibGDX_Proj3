@@ -12,4 +12,8 @@ public class SquishMonsterStrategy implements TargetingStrategy {
             .min(Comparator.comparingDouble(Monster::getCurrentHealth))
             .orElse(null);
     }
+    @Override
+    public String toString() {
+        return "Targetting system -> SquishiestMonsterStrategy";
+    }
 }

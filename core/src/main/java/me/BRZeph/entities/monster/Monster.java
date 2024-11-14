@@ -12,6 +12,8 @@ import me.BRZeph.utils.pathFinding.Node;
 
 import java.util.List;
 
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
 import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
 import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_WIDTH;
 
@@ -26,15 +28,17 @@ public class Monster {
     public float maxHealth;
     public float currentHealth;
     private float incomingDamage;
+    private float distanceToEnd;
 
-    public Monster(float x, float y, MonsterType type) {
-        this.x = x;
-        this.y = y;
+    public Monster(List<Node> path, MonsterType type) {
+        this.x = path.get(0).x;
+        this.y = path.get(0).y;
         this.type = type;
         finishedPath = false;
         maxHealth = type.getMaxHealth();
         currentHealth = maxHealth;
         incomingDamage = 0;
+        distanceToEnd = path.size()*TILE_WIDTH;
     }
 
     @Override
@@ -57,8 +61,8 @@ public class Monster {
         Node targetNode = path.get(currentNodeIndex);
 
         // Calculate the target position
-        float targetX = (targetNode.x + 0.5f) * Constants.AssetsTiles.TILE_WIDTH - type.width/2;
-        float targetY = (targetNode.y + 0.5f) * Constants.AssetsTiles.TILE_HEIGHT - type.height/2;
+        float targetX = (targetNode.x + 0.5f) * TILE_WIDTH - type.width/2;
+        float targetY = (targetNode.y + 0.5f) * TILE_HEIGHT - type.height/2;
 
         // Calculate the distance to the target node
         float dx = targetX - x;
@@ -70,6 +74,7 @@ public class Monster {
             float speed = type.getSpeed(); // Speed of the monster
             x += (dx / distance) * speed * delta; // Move x
             y += (dy / distance) * speed * delta; // Move y
+            distanceToEnd -= speed*delta;
         } else {
             // Reached the target node
             currentNodeIndex++;
@@ -114,16 +119,6 @@ public class Monster {
         batch.begin();
         batch.draw(type.getTexture(),x , y, type.getWidth(), type.getHeight()); // Render using texture from enum
         batch.end();
-    }
-
-    public float calculateDistanceToNextNode() {
-        if (currentNodeIndex >= path.size()) return Float.MAX_VALUE; // No next node
-
-        Node nextNode = path.get(currentNodeIndex);
-        float dx = nextNode.x - x; // Assuming x is the current x position of the monster
-        float dy = nextNode.y - y; // Assuming y is the current y position of the monster
-
-        return (float) Math.sqrt(dx * dx + dy * dy); // Euclidean distance
     }
 
     public float getIncomingDamage() {
@@ -204,5 +199,9 @@ public class Monster {
 
     public void takeDamage(float dmg){
         this.currentHealth -= dmg;
+    }
+
+    public float getDistanceToEnd() {
+        return distanceToEnd;
     }
 }

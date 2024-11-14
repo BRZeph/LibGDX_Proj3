@@ -133,7 +133,7 @@ public class Wave {
             if (rule.getRuleClock() - rule.getSpawnInterval() > 0 && !rule.isFirstSpawn()) {
                 rule.setRuleClock(0);
                 for (int i = 0; i < rule.getAmountPerSpawn(); i++) {
-                    monsterList.add(new Monster(path.get(0).x, path.get(0).y, type));
+                    monsterList.add(new Monster(path, type));
                 }
             }
         }

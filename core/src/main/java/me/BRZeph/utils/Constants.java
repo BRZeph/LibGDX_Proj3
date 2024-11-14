@@ -152,6 +152,17 @@ public class Constants {
 
                 public static final int TOWER_DAMAGE_X_POS = SELECTED_TOWER_X_POS + 30;
                 public static final int TOWER_DAMAGE_Y_POS = TOWER_RANGE_Y_POS - 30;
+
+                public static final int TOWER_AGGRO_LEFT_BUTTON_X_POS = TOWER_DAMAGE_X_POS;
+                public static final int TOWER_AGGRO_LEFT_BUTTON_Y_POS = TOWER_DAMAGE_Y_POS - 80;
+                public static final int TOWER_AGGRO_LEFT_BUTTON_WIDTH = SELECTED_TOWER_UI_WIDTH/2 - 30;
+                public static final int TOWER_AGGRO_LEFT_BUTTON_HEIGHT = 40;
+                public static final int TOWER_AGGRO_RIGHT_BUTTON_X_POS = TOWER_DAMAGE_X_POS + SELECTED_TOWER_UI_WIDTH/2;
+                public static final int TOWER_AGGRO_RIGHT_BUTTON_Y_POS = TOWER_DAMAGE_Y_POS - 80;
+                public static final int TOWER_AGGRO_RIGHT_BUTTON_WIDTH = SELECTED_TOWER_UI_WIDTH/2 - 30;
+                public static final int TOWER_AGGRO_RIGHT_BUTTON_HEIGHT = 40;
+                public static final int TOWER_AGGRO_TEXT_X_POS = TOWER_AGGRO_LEFT_BUTTON_X_POS;
+                public static final int TOWER_AGGRO_TEXT_Y_POS = TOWER_AGGRO_LEFT_BUTTON_Y_POS - 30;
             }
         }
     }
@@ -223,7 +234,7 @@ public class Constants {
         private static Map<MonsterType, List<SpawnBehavior>> getWave1Behavior() {
             return Map.of(
                 MonsterType.ZOMBIE, List.of(
-                    new SpawnBehavior(1, 10.2f, 21f),
+                    new SpawnBehavior(1, 10.2f, 2f),
                     new SpawnBehavior(1, 15f, 1f)
                 ),
                 MonsterType.SKELETON, List.of(

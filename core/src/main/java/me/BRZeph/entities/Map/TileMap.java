@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class TileMap {
-    private Tile[][] map; // 2D array for the tile map
+    private Tile[][] map;
     private String filePath;
     private int tileWidth;
     private int tileHeight;
@@ -63,6 +63,7 @@ public class TileMap {
 
         map = new Tile[rows.size()][];
         for (int i = 0; i < rows.size(); i++) {
+//            map[i] = rows.get(i);
             map[i] = rows.get(rows.size() - 1 - i); // Invert Y-axis by reversing row order
         }
     }

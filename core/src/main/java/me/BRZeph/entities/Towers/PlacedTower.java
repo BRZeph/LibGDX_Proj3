@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.core.Projectile;
 import me.BRZeph.core.WaveManager;
 import me.BRZeph.entities.Map.TileMap;
-import me.BRZeph.entities.Towers.TargetingSystem.FirstMonsterStrategy;
-import me.BRZeph.entities.Towers.TargetingSystem.TargetingStrategy;
+import me.BRZeph.entities.Towers.TargetingSystem.*;
 import me.BRZeph.entities.monster.Monster;
 import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
@@ -34,6 +33,8 @@ public class PlacedTower {
     private TargetingStrategy targetingStrategy;
     private List<Projectile> activeProjectiles;
     private Texture projectileTexture;
+    private final List<TargetingStrategy> strategies;
+    private int currentStrategyIndex;
 
     public PlacedTower(TowerType type, int xPos, int yPos) { //towers are rendered in the tiles.
         this.xPos = xPos; // Tile position.
@@ -44,8 +45,20 @@ public class PlacedTower {
         this.damage = getTowerDamage(type);
         this.attackCooldown = getTowerCooldown(type);
         this.cooldownClock = 0;
-        this.targetingStrategy = new FirstMonsterStrategy();
         this.activeProjectiles = new ArrayList<>();
+        this.strategies = List.of(
+            new FirstMonsterStrategy(),
+            new LastMonsterStrategy(),
+            new TankMonsterStrategy(),
+            new SquishMonsterStrategy()
+        );
+        this.currentStrategyIndex = 0; // Start with the first strategy
+        this.targetingStrategy = strategies.get(currentStrategyIndex);
+
+        loadTextures();
+    }
+
+    private void loadTextures() {
         projectileTexture = type.getProjectileTexture();
     }
 
@@ -170,5 +183,15 @@ public class PlacedTower {
 
     public void setTargetingStrategy(TargetingStrategy targetingStrategy) {
         this.targetingStrategy = targetingStrategy;
+    }
+
+    public void setNextTargetingStrategy(){
+        currentStrategyIndex = (currentStrategyIndex + 1) % strategies.size();
+        this.targetingStrategy = strategies.get(currentStrategyIndex);
+    }
+
+    public void setPreviousTargetingStrategy(){
+        currentStrategyIndex = (currentStrategyIndex - 1 + strategies.size()) % strategies.size();
+        this.targetingStrategy = strategies.get(currentStrategyIndex);
     }
 }
