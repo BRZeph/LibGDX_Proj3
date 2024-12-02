@@ -1,16 +1,13 @@
 package me.BRZeph.entities.Map;
 
 import com.badlogic.gdx.graphics.Texture;
-import me.BRZeph.entities.Towers.PlacedTower;
 
 public class Tile {
     private TileType type;
-    private final TileType originalTileType; //use this to replace the tile when a tower is removed from the ground.
     private int x, y;
 
     public Tile(TileType type){
-        this.type = type;
-        this.originalTileType = type;
+        this.type = type.cloneType(type);
     }
 
     public boolean isWalkable() {
@@ -18,7 +15,7 @@ public class Tile {
     }
 
     public Texture getTexture() {
-        return type.texture; // Get texture from enum
+        return type.getTexture();
     }
 
     public boolean isStartingPoint(){
@@ -35,14 +32,6 @@ public class Tile {
 
     public TileType getType() {
         return type;
-    }
-
-    public TileType getOriginalTileType() {
-        return originalTileType;
-    }
-
-    public void setOriginalTileType(){
-        type = originalTileType;
     }
 
     public void setType(TileType type) {
@@ -64,4 +53,5 @@ public class Tile {
     public void setY(int y) {
         this.y = y;
     }
+
 }

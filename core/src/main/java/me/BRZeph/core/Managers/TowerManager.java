@@ -1,18 +1,20 @@
-package me.BRZeph.core;
+package me.BRZeph.core.Managers;
 
 import me.BRZeph.entities.Map.TileMap;
 import me.BRZeph.entities.Map.TileType;
-import me.BRZeph.entities.Towers.PlacedTower;
+import me.BRZeph.entities.Towers.PlacedTower.ArcherTower;
+import me.BRZeph.entities.Towers.PlacedTower.CannonTower;
+import me.BRZeph.entities.Towers.PlacedTower.LightningTower;
+import me.BRZeph.entities.Towers.PlacedTower.Tower;
 import me.BRZeph.entities.Towers.TowerItem;
 import me.BRZeph.entities.Towers.TowerType;
-import me.BRZeph.utils.GlobalUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TowerManager {
-    private List<PlacedTower> towers; //consider removing this list
-    private PlacedTower selectedTower;
+    private List<Tower> towers; //consider removing this list
+    private Tower selectedTower;
 
     public TowerManager() {
         this.towers = new ArrayList<>();
@@ -21,11 +23,19 @@ public class TowerManager {
 
     public void placeTower(TileMap tileMap, TileType tileType, TowerType towerType, int tileX, int tileY) {
         tileMap.changeTile(tileX, tileY, tileType);
-        towers.add(new PlacedTower(towerType, tileX, tileY));
-    }
-
-    public void removeTower(TileMap tileMap, int x, int y){
-        tileMap.getMap()[x][y].setOriginalTileType();
+        switch (towerType){
+            case ARCHER:
+                towers.add(new ArcherTower(towerType, tileX, tileY));
+                break;
+            case CANNON:
+                towers.add(new CannonTower(towerType, tileX, tileY));
+                break;
+            case LIGHTNING:
+                towers.add(new LightningTower(towerType, tileX, tileY));
+                break;
+            default:
+                throw new IllegalArgumentException("Unregistered tower type -> " + towerType);
+        }
     }
 
     public boolean canBuyTower(CurrencyManager currencyManager, TowerItem towerItem){
@@ -44,15 +54,15 @@ public class TowerManager {
 
     }
 
-    public List<PlacedTower> getTowers() {
+    public List<Tower> getTowers() {
         return towers;
     }
 
-    public PlacedTower getSelectedTower() {
+    public Tower getSelectedTower() {
         return selectedTower;
     }
 
-    public void setSelectedTower(PlacedTower selectedTower) {
+    public void setSelectedTower(Tower selectedTower) {
         this.selectedTower = selectedTower;
     }
 }

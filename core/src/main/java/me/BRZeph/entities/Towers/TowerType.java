@@ -2,20 +2,40 @@ package me.BRZeph.entities.Towers;
 
 import com.badlogic.gdx.graphics.Texture;
 import me.BRZeph.Main;
-import me.BRZeph.utils.Constants;
+
+import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
+import static me.BRZeph.utils.Constants.Values.TowerValues.ArcherTowerValues.*;
+import static me.BRZeph.utils.Constants.Values.TowerValues.CannonTowerValues.*;
+import static me.BRZeph.utils.Constants.Values.TowerValues.CannonTowerValues.CANNON_TOWER_AOE_DAMAGE;
+import static me.BRZeph.utils.Constants.Values.TowerValues.LightningTowerValues.*;
 
 public enum TowerType {
     ARCHER(
-        Constants.Values.TowerValues.ARCHER_TOWER_PRICE_GOLD, Constants.Values.TowerValues.ARCHER_TOWER_PRICE_ESSENCE,
-        Constants.Values.TowerValues.ARCHER_TOWER_PRICE_MOMENTUM, Constants.Values.TowerValues.ARCHER_TOWER_DAMAGE,
-        Constants.Values.TowerValues.ARCHER_TOWER_RANGE, Constants.Values.TowerValues.ARCHER_TOWER_ATTACK_COOLDOWN,
-        Constants.Values.TowerValues.ARCHER_TOWER_IS_AOE,
-        Main.getAssetManager().get(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PLACED),
-        Main.getAssetManager().get(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_ITEM),
-        Main.getAssetManager().get(Constants.Paths.TowersTexturesPath.ARCHER_TOWER_PROJECTILE)
+        ARCHER_TOWER_PRICE_GOLD, ARCHER_TOWER_PRICE_ESSENCE, ARCHER_TOWER_PRICE_MOMENTUM,
+        ARCHER_TOWER_DAMAGE, ARCHER_TOWER_RANGE, ARCHER_TOWER_ATTACK_COOLDOWN,
+        ARCHER_TOWER_IS_AOE, ARCHER_TOWER_AOE_RANGE, ARCHER_TOWER_AOE_DAMAGE,
+        Main.getAssetManager().get(ARCHER_TOWER_PLACED),
+        Main.getAssetManager().get(ARCHER_TOWER_ITEM),
+        Main.getAssetManager().get(ARCHER_TOWER_PROJECTILE)
+    ),
+    CANNON(
+        CANNON_TOWER_PRICE_GOLD, CANNON_TOWER_PRICE_ESSENCE, CANNON_TOWER_PRICE_MOMENTUM,
+        CANNON_TOWER_DAMAGE, CANNON_TOWER_RANGE, CANNON_TOWER_ATTACK_COOLDOWN,
+        CANNON_TOWER_IS_AOE, CANNON_TOWER_AOE_RANGE, CANNON_TOWER_AOE_DAMAGE,
+        Main.getAssetManager().get(CANNON_TOWER_PLACED),
+        Main.getAssetManager().get(CANNON_TOWER_ITEM),
+        Main.getAssetManager().get(CANNON_TOWER_PROJECTILE)
+    ),
+    LIGHTNING(
+        LIGHTNING_TOWER_PRICE_GOLD, LIGHTNING_TOWER_PRICE_ESSENCE, LIGHTNING_TOWER_PRICE_MOMENTUM,
+        LIGHTNING_TOWER_DAMAGE, LIGHTNING_TOWER_RANGE, LIGHTNING_TOWER_ATTACK_COOLDOWN,
+        LIGHTNING_TOWER_IS_AOE, LIGHTNING_TOWER_AOE_RANGE, LIGHTNING_TOWER_AOE_DAMAGE,
+        Main.getAssetManager().get(LIGHTNING_TOWER_PLACED),
+        Main.getAssetManager().get(LIGHTNING_TOWER_ITEM),
+        Main.getAssetManager().get(LIGHTNING_TOWER_PROJECTILE)
     );
 
-    private final float goldCost, essenceCost, momentumCost, damage, range, attackCooldown;
+    private final float goldCost, essenceCost, momentumCost, damage, range, attackCooldown, aoeRange, aoeDamage;
     private final boolean aoe;
     private final Texture itemTexture;
     private Texture placedTexture, projectileTexture;
@@ -23,7 +43,8 @@ public enum TowerType {
 
     TowerType(float goldCost, float essenceCost, float momentumCost,
               float damage, float range, float attackCooldown,
-              boolean aoe, Texture placedTexture, Texture itemTexture, Texture projectileTexture) {
+              boolean aoe, float aoeRange, float aoeDamage,
+              Texture placedTexture, Texture itemTexture, Texture projectileTexture) {
         this.goldCost = goldCost;
         this.essenceCost = essenceCost;
         this.momentumCost = momentumCost;
@@ -31,9 +52,43 @@ public enum TowerType {
         this.range = range;
         this.attackCooldown = attackCooldown;
         this.aoe = aoe;
+        this.aoeRange = aoeRange;
+        this.aoeDamage = aoeDamage;
         this.placedTexture = placedTexture;
         this.itemTexture = itemTexture;
         this.projectileTexture = projectileTexture;
+    }
+
+    @Override
+    public String toString() {
+        String basicInfo = "TowerType{" +
+            "damage=" + damage +
+            ", range=" + range +
+            ", attackCooldown=" + attackCooldown +
+            ", aoe=" + aoe +
+            ", aoeRange=" + aoeRange +
+            ", aoeDamage=" + aoeDamage +
+            "}";
+
+        switch (this) {
+            case ARCHER:
+                return "ARCHER " + basicInfo +
+                    ", goldCost=" + goldCost +
+                    ", essenceCost=" + essenceCost +
+                    ", momentumCost=" + momentumCost;
+            case CANNON:
+                return "CANNON " + basicInfo +
+                    ", goldCost=" + goldCost +
+                    ", essenceCost=" + essenceCost +
+                    ", momentumCost=" + momentumCost;
+            case LIGHTNING:
+                return "LIGHTNING " + basicInfo +
+                    ", goldCost=" + goldCost +
+                    ", essenceCost=" + essenceCost +
+                    ", momentumCost=" + momentumCost;
+            default:
+                return "Unknown TowerType";
+        }
     }
 
     public float getGoldCost() {
@@ -78,5 +133,13 @@ public enum TowerType {
 
     public Texture getProjectileTexture() {
         return projectileTexture;
+    }
+
+    public float getAoeRange() {
+        return aoeRange;
+    }
+
+    public float getAoeDamage() {
+        return aoeDamage;
     }
 }

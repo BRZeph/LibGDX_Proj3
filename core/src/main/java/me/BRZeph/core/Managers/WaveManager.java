@@ -1,4 +1,4 @@
-package me.BRZeph.core;
+package me.BRZeph.core.Managers;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,8 +32,8 @@ public class WaveManager {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer){
-        waves.get(currentWaveIndex).render(batch, font, shapeRenderer);
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, float delta){
+        waves.get(currentWaveIndex).render(batch, font, shapeRenderer, delta);
     }
 
     public void startNextWave() {

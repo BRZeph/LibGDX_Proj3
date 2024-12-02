@@ -34,9 +34,15 @@ public class Constants {
         }
 
         public static class TowersTexturesPath {
-            public static final String ARCHER_TOWER_PLACED = "Textures\\Towers\\Archer_tower.png";
-            public static final String ARCHER_TOWER_ITEM = "Textures\\Towers\\Archer_tower_item.png";
-            public static final String ARCHER_TOWER_PROJECTILE = "Textures\\Towers\\Archer_tower_projectile.png";
+            public static final String ARCHER_TOWER_PLACED =     "Textures\\Towers\\ArcherTower\\Archer_tower.png";
+            public static final String ARCHER_TOWER_ITEM =       "Textures\\Towers\\ArcherTower\\Archer_tower_item.png";
+            public static final String ARCHER_TOWER_PROJECTILE = "Textures\\Towers\\ArcherTower\\Archer_tower_projectile.png";
+            public static final String CANNON_TOWER_PLACED =     "Textures\\Towers\\CannonTower\\Cannon_tower.png";
+            public static final String CANNON_TOWER_ITEM =       "Textures\\Towers\\CannonTower\\Cannon_tower_item.png";
+            public static final String CANNON_TOWER_PROJECTILE = "Textures\\Towers\\CannonTower\\Cannon_tower_projectile.png";
+            public static final String LIGHTNING_TOWER_PLACED =     "Textures\\Towers\\LightningTower\\Lightning_tower.png";
+            public static final String LIGHTNING_TOWER_ITEM =       "Textures\\Towers\\LightningTower\\Lightning_tower_item.png";
+            public static final String LIGHTNING_TOWER_PROJECTILE = "Textures\\Towers\\LightningTower\\Lightning_tower_projectile.png";
         }
 
         public static class MonstersTexturesPath {
@@ -45,10 +51,21 @@ public class Constants {
         }
 
         public static class TilesTexturesPath {
-            public static final String GRASS_TILE = "Textures\\Tiles\\Grass.png";
-            public static final String WATER_TILE = "Textures\\Tiles\\Water.png";
-            public static final String STARTING_POINT = "Textures\\Tiles\\Starting_Tile.png";
-            public static final String ENDING_POINT = "Textures\\Tiles\\Ending_Tile.png";
+
+            public static final String GRASS_TILE_IDLE = "Textures\\Tiles\\Grass_idle.png";
+            public static final String GRASS_TILE_FIRE = "Textures\\Tiles\\Grass_fire.png";
+            public static final String WATER_TILE_IDLE = "Textures\\Tiles\\Water_idle.png";
+            public static final String WATER_TILE_FIRE = "Textures\\Tiles\\Water_fire.png";
+            public static final String STARTING_POINT_TILE_IDLE = "Textures\\Tiles\\Starting_Tile_idle.png";
+            public static final String STARTING_POINT_TILE_FIRE = "Textures\\Tiles\\Starting_Tile_fire.png";
+            public static final String ENDING_POINT_TILE_IDLE = "Textures\\Tiles\\Ending_Tile_idle.png";
+            public static final String ENDING_POINT_TILE_FIRE = "Textures\\Tiles\\Ending_Tile_fire.png";
+            public static final String HERO_WALL_TILE_IDLE = "Textures\\Tiles\\HeroRoom\\Hero_Wall_idle.png";
+            public static final String HERO_WALL_TILE_FIRE = "Textures\\Tiles\\HeroRoom\\Hero_Wall_fire.png";
+            public static final String HERO_CORNER_TILE_IDLE = "Textures\\Tiles\\HeroRoom\\Hero_BLC_idle.png";
+            public static final String HERO_CORNER_TILE_FIRE = "Textures\\Tiles\\HeroRoom\\Hero_BLC_fire.png";
+            public static final String HERO_FLOOR_TILE_IDLE = "Textures\\Tiles\\HeroRoom\\Hero_Floor_idle.png";
+            public static final String HERO_FLOOR_TILE_FIRE = "Textures\\Tiles\\HeroRoom\\Hero_Floor_fire.png";
         }
 
         public static class MapsPath {
@@ -60,7 +77,19 @@ public class Constants {
             public static final String HEART_UI = "Textures\\UI\\Heart 001.png";
             public static final String TOWER_SHOP_BACKGROUND_UI = "Textures\\UI\\towerShop\\tower shop ui back 001.png";
             public static final String TOWER_SHOP_FRONT_UI = "Textures\\UI\\towerShop\\tower shop ui front 001.png";
-            public static final String SELECTED_TOWER_BACKGROUND = "Textures\\UI\\SelectedTower\\selected tower background 001.png";
+            public static final String SELECTED_TOWER_BACKGROUND_UI = "Textures\\UI\\SelectedTower\\selected tower background 001.png";
+        }
+
+        public static class Animations {
+            public static final String PLAYER_WALK_ANIMATION = "Textures\\Animations\\Player\\PlayerWalk.png";
+            public static final float PLAYER_WALK_FRAME_TIME = 0.1f;
+            public static final String PLAYER_WALK_ANIMATION_NAME = "player_walk";
+
+            public static final String MONSTER_WALK_ANIMATION = "Textures\\Animations\\Monster\\MonsterWalk.png";
+            public static final float ZOMBIE_WALK_FRAME_TIME = 0.1f;
+            public static final String ZOMBIE_WALK_ANIMATION_NAME = "zombie_walk";
+            public static final float SKELETON_WALK_FRAME_TIME = 0.1f;
+            public static final String SKELETON_WALK_ANIMATION_NAME = "skeleton_walk";
         }
     }
 
@@ -70,32 +99,65 @@ public class Constants {
             public static final float LEVEL_1_PLAYER_HEALTH = 10;
             public static final float HOLDING_ITEM_WIDTH = 48;
             public static final float HOLDING_ITEM_HEIGHT = 48;
+            public static final float PLAYER_WIDTH = 64;
+            public static final float PLAYER_HEIGHT = 64;
+            public static final int PLAYER_SPEED = 300;
         }
-
-//        public static class CurrencyTypes {
-//            //this is just a basic template, change it later.
-//
-//            public static final String FIRST_CURRENCY  = " 0 -> [material 0]";
-//            public static final String SECOND_CURRENCY = " 1 -> [material 1]";
-//            public static final String THIRD_CURRENCY  = " 2 -> [material 2]";
-//            public static final String FORTH_CURRENCY  = " 3 -> [material 3]";
-//        }
 
         public static class TowerValues {
             //gold     -> CurrencyType = 0.
             //essence  -> CurrencyType = 1.
             //momentum -> CurrencyType = 2.
-            public static final float ARCHER_TOWER_PRICE_GOLD = 5;
-            public static final float ARCHER_TOWER_PRICE_ESSENCE = 0;
-            public static final float ARCHER_TOWER_PRICE_MOMENTUM = 0;
-            public static final float ARCHER_TOWER_DAMAGE = 4;
-            public static final float ARCHER_TOWER_RANGE = 1000;
-            public static final float ARCHER_TOWER_ATTACK_COOLDOWN = 0.1f; //0.4 attacks per second
-            public static final float ARCHER_TOWER_PROJECTILE_SPEED = 1600;
-            public static final boolean ARCHER_TOWER_IS_AOE = false;
-            public static final int TARGET_HIT_THRESHOLD = 20;
-            public static final int PROJECTILE_WIDTH = 32;
-            public static final int PROJECTILE_HEIGHT = 32;
+            public static final float TARGET_HIT_THRESHOLD = 20; // setting this to 10 causes issues of not hitting.
+            // maybe change the way to detect hit?
+
+            public static class ArcherTowerValues {
+                public static final float ARCHER_TOWER_PRICE_GOLD = 5;
+                public static final float ARCHER_TOWER_PRICE_ESSENCE = 0;
+                public static final float ARCHER_TOWER_PRICE_MOMENTUM = 0;
+                public static final float ARCHER_TOWER_DAMAGE = 4;
+                public static final float ARCHER_TOWER_RANGE = 1000;
+                public static final float ARCHER_TOWER_ATTACK_COOLDOWN = 5f; // 1 attacks per 5 seconds
+                public static final float ARCHER_TOWER_PROJECTILE_SPEED = 1600;
+                public static final boolean ARCHER_TOWER_IS_AOE = false;
+                public static final float ARCHER_TOWER_AOE_RANGE = -1;
+                public static final float ARCHER_TOWER_AOE_DAMAGE = -1;
+                public static final int ARCHER_TOWER_PROJECTILE_WIDTH = 32;
+                public static final int ARCHER_TOWER_PROJECTILE_HEIGHT = 32;
+                public static final int ARCHER_TOWER_ATTACK_BAR_WIDTH = 48;
+            }
+            public static class CannonTowerValues {
+                public static final float CANNON_TOWER_PRICE_GOLD = 8;
+                public static final float CANNON_TOWER_PRICE_ESSENCE = 0;
+                public static final float CANNON_TOWER_PRICE_MOMENTUM = 0;
+                public static final float CANNON_TOWER_DAMAGE = 6;
+                public static final float CANNON_TOWER_RANGE = 400;
+                public static final float CANNON_TOWER_ATTACK_COOLDOWN = 3f; // 1 attacks per 3 seconds
+                public static final float CANNON_TOWER_PROJECTILE_SPEED = 1600;
+                public static final boolean CANNON_TOWER_IS_AOE = false;
+                public static final float CANNON_TOWER_AOE_RANGE = 64;
+                public static final float CANNON_TOWER_AOE_DAMAGE = 1.2f;
+                public static final int CANNON_TOWER_PROJECTILE_WIDTH = 32;
+                public static final int CANNON_TOWER_PROJECTILE_HEIGHT = 32;
+                public static final int CANNON_TOWER_ATTACK_BAR_WIDTH = 48;
+            }
+            public static class LightningTowerValues {
+                public static final float LIGHTNING_TOWER_PRICE_GOLD = 4;
+                public static final float LIGHTNING_TOWER_PRICE_ESSENCE = 0;
+                public static final float LIGHTNING_TOWER_PRICE_MOMENTUM = 0;
+                public static final float LIGHTNING_TOWER_DAMAGE = 2;
+                public static final float LIGHTNING_TOWER_RANGE = 600;
+                public static final float LIGHTNING_TOWER_ATTACK_COOLDOWN = 0.1f; // 1 attack per 0.1 second
+                public static final float LIGHTNING_TOWER_PROJECTILE_SPEED = 1600;
+                public static final boolean LIGHTNING_TOWER_IS_AOE = false;
+                public static final float LIGHTNING_TOWER_AOE_RANGE = -1;
+                public static final float LIGHTNING_TOWER_AOE_DAMAGE = -1;
+                public static final int LIGHTNING_TOWER_PROJECTILE_WIDTH = 32;
+                public static final int LIGHTNING_TOWER_PROJECTILE_HEIGHT = 32;
+                public static final int LIGHTNING_TOWER_ATTACK_BAR_WIDTH = 48;
+                public static final int LIGHTNING_TOWER_CHAIN_HIT_TARGET_AMOUNT = 3;
+                public static final int LIGHTNING_TOWER_CHAIN_HIT_MAX_DISTANCE = 128;
+            }
         }
 
         public static class UIValues {
@@ -169,7 +231,7 @@ public class Constants {
 
     // Monster Assets Paths
     public static class AssetsMonsters {
-        public static final float ZOMBIE_HEALTH = 8;
+        public static final float ZOMBIE_HEALTH = 10;
         public static final int ZOMBIE_WIDTH = 32;
         public static final int ZOMBIE_HEIGHT = 32;
         public static final int ZOMBIE_SPEED = 100;
@@ -186,13 +248,6 @@ public class Constants {
         public static final float SKELETON_GOLD_LOOT = 5;
         public static final float SKELETON_ESSENCE_LOOT = 1;
         public static final float SKELETON_MOMENTUM_LOOT = 0;
-    }
-
-    // Player Assets Paths and Constants
-    public static class AssetsPlayer {
-        public static final int PLAYER_WIDTH = 32;
-        public static final int PLAYER_HEIGHT = 32;
-        public static final int PLAYER_SPEED = 300;
     }
 
     // Tile Assets Paths and Constants
@@ -235,7 +290,8 @@ public class Constants {
             return Map.of(
                 MonsterType.ZOMBIE, List.of(
                     new SpawnBehavior(1, 10.2f, 2f),
-                    new SpawnBehavior(1, 15f, 1f)
+                    new SpawnBehavior(1, 15f, 1f),
+                    new SpawnBehavior(8, 30f, 0.5f)
                 ),
                 MonsterType.SKELETON, List.of(
                     new SpawnBehavior(1, 13f, 1f)

@@ -1,4 +1,4 @@
-package me.BRZeph.core;
+package me.BRZeph.core.Managers;
 
 import me.BRZeph.entities.monster.MonsterType;
 

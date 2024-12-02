@@ -6,8 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.BRZeph.Main;
-import me.BRZeph.core.ScreenManager;
+import me.BRZeph.core.Managers.ScreenManager;
 import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
 

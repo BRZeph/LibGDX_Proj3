@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import me.BRZeph.Main;
-import me.BRZeph.entities.Towers.PlacedTower;
-import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
 import me.BRZeph.utils.pathFinding.Node;
 
@@ -15,11 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+
 public class TileMap {
     private Tile[][] map;
     private String filePath;
-    private int tileWidth;
-    private int tileHeight;
+    private static final int tileWidth = TILE_WIDTH;
+    private static final int tileHeight = TILE_HEIGHT;
 
     private int pathStartPointX;
     private int pathStartPointY;
@@ -27,21 +28,20 @@ public class TileMap {
     private int pathEndPointY;
     private List<Node> path;
 
-    public TileMap(String filePath, int tileWidth, int tileHeight) {
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
+    public TileMap(String filePath) {
         this.filePath = filePath;
     }
 
     public void changeTile(int x, int y, TileType tileType){
-        Tile oldTile = map[x][y];
-        map[x][y] = new Tile(tileType);
+        Tile oldTile = map[y][x]; // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
+        map[y][x] = new Tile(tileType); // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
         if (oldTile.isWalkable()){
             createPath();
         }
     }
 
     private void loadMap(String filePath) {
+        GlobalUtils.consoleLog("Loading map ...");
         List<Tile[]> rows = new ArrayList<>();
         try (BufferedReader reader = Gdx.files.internal(filePath).reader(512)) {
             String line;
@@ -50,22 +50,23 @@ public class TileMap {
                 Tile[] row = new Tile[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {
                     int tileTypeIndex = Integer.parseInt(tokens[i]);
-                    if (tileTypeIndex >= 0 && tileTypeIndex < TileType.values().length) {
-                        TileType tileType = TileType.values()[tileTypeIndex];
+                    if (tileTypeIndex >= 0) {
+                        TileType tileType = TileType.getTileByNumber(tileTypeIndex);
                         row[i] = new Tile(tileType);
                     }
                 }
                 rows.add(row);
             }
         } catch (IOException e) {
+            GlobalUtils.consoleLog("Error while loading map");
             e.printStackTrace();
         }
 
         map = new Tile[rows.size()][];
         for (int i = 0; i < rows.size(); i++) {
-//            map[i] = rows.get(i);
             map[i] = rows.get(rows.size() - 1 - i); // Invert Y-axis by reversing row order
         }
+        GlobalUtils.consoleLog("Map loaded");
     }
 
     public void loadMapAndFindPath(String filePath) {
@@ -74,13 +75,13 @@ public class TileMap {
     }
 
     private void createPath() {
+        GlobalUtils.consoleLog("Finding starting and ending points for the path...");
         int startX = -1, startY = -1;
         int endX = -1, endY = -1;
 
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
-                Tile tile = map[y][x];
-
+                Tile tile = map[y][x]; // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
                 //inverting the end point and start point, otherwise the path starts at the end point
 
                 if (tile.isEndingPoint()) {
@@ -99,20 +100,20 @@ public class TileMap {
 
         // Check if starting and ending points were found
         if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
+            GlobalUtils.consoleLog("Successfully found starting and ending point");
             path = findPath();
             if (path == null) {
                 pathNotFound();
             }
         } else {
-            System.out.println("Starting or ending point not found in the map.");
+            GlobalUtils.consoleLog("Starting or ending point not found in the map.\n" +
+                "startPos -> " + startX + ";" + startY + "\n" +
+                "endPos -> " + endX + ";" + endY);
         }
     }
 
     // Placeholder method to be implemented later
     private void pathNotFound() {
-        GlobalUtils.consoleLog("INVALID PATH");
-        GlobalUtils.consoleLog("INVALID PATH");
-        GlobalUtils.consoleLog("INVALID PATH");
         GlobalUtils.consoleLog("INVALID PATH");
     }
 
@@ -120,7 +121,7 @@ public class TileMap {
         spriteBatch.begin();
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
-                Tile tile = map[y][x];
+                Tile tile = map[y][x]; // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
                 if (tile != null) {
                     Texture texture = tile.getTexture();
                     spriteBatch.draw(texture, x * tileWidth, y * tileHeight, tileWidth, tileHeight);
@@ -142,7 +143,7 @@ public class TileMap {
         if (x < 0 || x >= map[0].length || y < 0 || y >= map.length) {
             return null;
         }
-        return map[y][x];
+        return map[y][x]; // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
     }
 
     public Tile getTileAtScreen(int screenX, int screenY){ // x and y are screen coordinates.
@@ -156,6 +157,7 @@ public class TileMap {
     }
 
     public List<Node> findPath() {
+        GlobalUtils.consoleLog("Finding path...");
         int startX = pathStartPointX;
         int startY = pathStartPointY;
         int endX = pathEndPointX;
@@ -165,74 +167,98 @@ public class TileMap {
         Node endNode = new Node(endX, endY, map[endY][endX].isWalkable());
 
         if (!startNode.walkable || !endNode.walkable) {
+            GlobalUtils.consoleLog("Unwalkable starting or ending point");
             return null; // Cannot start or end on non-walkable tiles
         }
 
-        List<Node> openSet = new ArrayList<>();
-        List<Node> closedSet = new ArrayList<>();
-        PriorityQueue<Node> priorityQueue = new PriorityQueue<>((a, b) -> Float.compare(a.fCost, b.fCost));
+        // PriorityQueue uses Node's compareTo method to order nodes based on fCost.
+        PriorityQueue<Node> openList = new PriorityQueue<>();
+        startNode.gCost = 0;
+        startNode.hCost = heuristic(startNode, endNode);
+        startNode.calculateFCost();
+        openList.add(startNode);
 
-        openSet.add(startNode);
-        priorityQueue.add(startNode);
-
-        int max_iterations = 100000;
+        List<Node> closedList = new ArrayList<>();
+        int maxIterations = 1000000;
         int iterations = 0;
 
-        while (!priorityQueue.isEmpty()) {
-            if (iterations > max_iterations){
+        while (!openList.isEmpty()) {
+            if (iterations > maxIterations) {
                 Main.getScreenManager().showMainMenu();
-                GlobalUtils.consoleLog("took too long");
+                GlobalUtils.consoleLog("Error while loading path, took too long");
                 return null;
             }
             iterations++;
-            Node currentNode = priorityQueue.poll();
-            if (currentNode.x == endX && currentNode.y == endY) {
+
+            if (iterations % 1000 == 1){
+                GlobalUtils.consoleLog("Iteration number : " + iterations);
+            }
+
+            Node currentNode = openList.poll();
+            closedList.add(currentNode);
+
+            // If we reached the end node, reconstruct the path.
+            if (currentNode.equals(endNode)) {
+                GlobalUtils.consoleLog("Successfully built path");
                 return buildPath(currentNode);
             }
 
-            openSet.remove(currentNode);
-            closedSet.add(currentNode);
-
             for (Node neighbor : getNeighbors(currentNode)) {
-                if (!neighbor.walkable || closedSet.contains(neighbor)) {
+                if (closedList.contains(neighbor) || !neighbor.walkable) {
                     continue; // Skip non-walkable or already evaluated nodes
                 }
 
-                float newCostToNeighbor = currentNode.gCost + 1; // Assume uniform cost for neighbors
-                if (newCostToNeighbor < neighbor.gCost || !openSet.contains(neighbor)) {
+                float newCostToNeighbor = currentNode.gCost + getMovementCost(currentNode, neighbor);
+                if (newCostToNeighbor < neighbor.gCost || !openList.contains(neighbor)) {
                     neighbor.gCost = newCostToNeighbor;
                     neighbor.hCost = heuristic(neighbor, endNode);
                     neighbor.calculateFCost();
                     neighbor.parent = currentNode;
 
-                    if (!openSet.contains(neighbor)) {
-                        openSet.add(neighbor);
-                        priorityQueue.add(neighbor);
-                    }
+                    openList.add(neighbor);
                 }
             }
         }
 
+        GlobalUtils.consoleLog("Error while loading path, no path found");
         return null; // No path found
+    }
+
+    private float getMovementCost(Node current, Node neighbor) {
+        // Example of adding diagonal movement cost
+        if (Math.abs(current.x - neighbor.x) + Math.abs(current.y - neighbor.y) == 2) {
+            return 1.4f; // Diagonal cost (approximates sqrt(2) for diagonal moves)
+        }
+        return 1f; // Default cost for straight movement
     }
 
     private List<Node> getNeighbors(Node node) {
         List<Node> neighbors = new ArrayList<>();
-        int[][] directions = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} }; // Up, Right, Down, Left
+        int[][] directions = {
+            {0, 1},   // Up
+            {1, 0},   // Right
+            {0, -1},  // Down
+            {-1, 0}   // Left
+        };
 
         for (int[] direction : directions) {
             int checkX = node.x + direction[0];
             int checkY = node.y + direction[1];
 
             if (checkX >= 0 && checkX < map[0].length && checkY >= 0 && checkY < map.length) {
-                neighbors.add(new Node(checkX, checkY, map[checkY][checkX].isWalkable()));
+                // Add only walkable neighbors
+                if (map[checkY][checkX].isWalkable()) {
+                    neighbors.add(new Node(checkX, checkY, map[checkY][checkX].isWalkable()));
+                }
             }
         }
         return neighbors;
     }
 
+
     private float heuristic(Node a, Node b) {
-        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
+        // Use Euclidean distance for more accurate heuristic.
+        return (float) Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
     }
 
     private List<Node> buildPath(Node endNode) {

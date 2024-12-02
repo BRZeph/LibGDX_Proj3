@@ -19,7 +19,6 @@ public class SpawnRule {
         this.firstSpawn = true;
     }
 
-    // Getters
     public MonsterType getMonsterType() {
         return monsterType;
     }
@@ -36,7 +35,6 @@ public class SpawnRule {
         return spawnInterval;
     }
 
-    // Setter for spawn interval to dynamically change during gameplay
     public void setSpawnInterval(float spawnInterval) {
         this.spawnInterval = spawnInterval;
     }

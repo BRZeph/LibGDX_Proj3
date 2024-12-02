@@ -3,9 +3,9 @@ package me.BRZeph.core;
 
 import com.badlogic.gdx.graphics.Texture;
 import me.BRZeph.entities.monster.Monster;
-import me.BRZeph.utils.GlobalUtils;
 
-import static me.BRZeph.utils.Constants.Values.TowerValues.*;
+import static me.BRZeph.utils.Constants.Values.TowerValues.TARGET_HIT_THRESHOLD;
+import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 
 public class Projectile {
@@ -39,6 +39,7 @@ public class Projectile {
     }
 
     public void update(float delta) {
+//        if (target != null && !hasReachedTarget()) {
         if (target != null && !hasReachedTarget()) {
             // Calculate direction
             float targetX = target.getX();

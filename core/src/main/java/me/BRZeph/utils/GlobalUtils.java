@@ -1,33 +1,25 @@
 package me.BRZeph.utils;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.entities.Map.TileType;
 import me.BRZeph.entities.Towers.TowerType;
 
+import java.text.DecimalFormat;
+
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Values.TowerValues.ArcherTowerValues.ARCHER_TOWER_ATTACK_BAR_WIDTH;
+
 public class GlobalUtils {
+    public static final DecimalFormat df = new DecimalFormat("#.##");
+
     public static void consoleLog(String log){
         System.out.println("*************************");
         System.out.println(log);
         System.out.println("*************************");
-    }
-
-    public static TowerType getTowerTypeFromTileType(TileType tileType){
-        switch (tileType){
-            case ARCHER_TOWER:
-                return TowerType.ARCHER;
-            default:
-                throw new IllegalArgumentException("Invalid argument -> " + tileType);
-        }
-    }
-
-    public static TileType getTileTypeFromTowerType(TowerType tileType){
-        switch (tileType){
-            case ARCHER:
-                return TileType.ARCHER_TOWER;
-            default:
-                throw new IllegalArgumentException("Invalid argument -> " + tileType);
-        }
     }
 
     public static String adjustTextWidth(String message, float desiredWidth, BitmapFont font, GlyphLayout glyphLayout) {
@@ -67,5 +59,20 @@ public class GlobalUtils {
             }
         }
         return spacedMessage;
+    }
+
+    public static void drawTowerAttackCooldown(ShapeRenderer shapeRenderer, float cooldownClock, float attackCooldown, int xPos, int yPos) {
+        float progress = java.lang.Math.min(cooldownClock / attackCooldown, 1.0f);
+
+        float xPosBar = ( 0.5f + xPos) * TILE_WIDTH - (float) ARCHER_TOWER_ATTACK_BAR_WIDTH /2;
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.rect(xPosBar, yPos * TILE_HEIGHT, ARCHER_TOWER_ATTACK_BAR_WIDTH, 10);
+
+        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.rect(xPosBar, yPos * TILE_HEIGHT, ARCHER_TOWER_ATTACK_BAR_WIDTH * ( 1 -  progress ) , 10);
+
+        shapeRenderer.end();
     }
 }

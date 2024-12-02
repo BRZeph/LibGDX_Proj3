@@ -2,7 +2,7 @@ package me.BRZeph.Screens.Levels;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import me.BRZeph.core.ScreenManager;
+import me.BRZeph.core.Managers.ScreenManager;
 
 public abstract class BaseLevelScreen implements Screen {
     protected final AssetManager assetManager;

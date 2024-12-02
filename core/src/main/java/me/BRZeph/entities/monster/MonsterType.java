@@ -2,18 +2,21 @@ package me.BRZeph.entities.monster;
 
 import com.badlogic.gdx.graphics.Texture;
 import me.BRZeph.Main;
-import me.BRZeph.utils.Constants;
+
+import static me.BRZeph.utils.Constants.AssetsMonsters.*;
+import static me.BRZeph.utils.Constants.Paths.Animations.*;
+import static me.BRZeph.utils.Constants.Paths.MonstersTexturesPath.*;
 
 public enum MonsterType {
-    ZOMBIE  (Main.getAssetManager().get(Constants.Paths.MonstersTexturesPath.ZOMBIE_TEXTURE),
-        Constants.AssetsMonsters.ZOMBIE_WIDTH, Constants.AssetsMonsters.ZOMBIE_HEIGHT, Constants.AssetsMonsters.ZOMBIE_SPEED,
-        Constants.AssetsMonsters.ZOMBIE_NEXUS_DMG, Constants.AssetsMonsters.ZOMBIE_HEALTH, Constants.AssetsMonsters.ZOMBIE_GOLD_LOOT,
-        Constants.AssetsMonsters.ZOMBIE_ESSENCE_LOOT, Constants.AssetsMonsters.ZOMBIE_MOMENTUM_LOOT
+    ZOMBIE (Main.getAssetManager().get(ZOMBIE_TEXTURE),
+        ZOMBIE_WIDTH, ZOMBIE_HEIGHT, ZOMBIE_SPEED, ZOMBIE_NEXUS_DMG, ZOMBIE_HEALTH,
+        ZOMBIE_GOLD_LOOT, ZOMBIE_ESSENCE_LOOT, ZOMBIE_MOMENTUM_LOOT,
+        MONSTER_WALK_ANIMATION, ZOMBIE_WALK_ANIMATION_NAME
     ),
-    SKELETON  (Main.getAssetManager().get(Constants.Paths.MonstersTexturesPath.SKELETON_TEXTURE),
-        Constants.AssetsMonsters.SKELETON_WIDTH, Constants.AssetsMonsters.SKELETON_HEIGHT, Constants.AssetsMonsters.SKELETON_SPEED,
-        Constants.AssetsMonsters.SKELETON_NEXUS_DMG, Constants.AssetsMonsters.SKELETON_HEALTH, Constants.AssetsMonsters.SKELETON_GOLD_LOOT,
-        Constants.AssetsMonsters.SKELETON_ESSENCE_LOOT, Constants.AssetsMonsters.SKELETON_MOMENTUM_LOOT
+    SKELETON (Main.getAssetManager().get(SKELETON_TEXTURE),
+        SKELETON_WIDTH, SKELETON_HEIGHT, SKELETON_SPEED, SKELETON_NEXUS_DMG, SKELETON_HEALTH,
+        SKELETON_GOLD_LOOT, SKELETON_ESSENCE_LOOT, SKELETON_MOMENTUM_LOOT,
+        MONSTER_WALK_ANIMATION, SKELETON_WALK_ANIMATION_NAME
     );
 
     public final Texture texture;
@@ -26,9 +29,12 @@ public enum MonsterType {
     public float goldLoot;
     public float essenceLoot;
     public float momentumLoot;
+    private String animationPath;
+    private String walkAnimationName;
 
     MonsterType(Texture texture, float width, float height, float speed, int nexusDmg, float maxHealth,
-                float goldLoot, float essenceLoot, float momentumLoot) {
+                float goldLoot, float essenceLoot, float momentumLoot,
+                String walkAnimationPath, String walkAnimationName) {
         this.texture = texture;
         this.width = width;
         this.height = height;
@@ -39,6 +45,16 @@ public enum MonsterType {
         this.goldLoot = goldLoot;
         this.essenceLoot = essenceLoot;
         this.momentumLoot = momentumLoot;
+        this.animationPath = walkAnimationPath;
+        this.walkAnimationName = walkAnimationName;
+    }
+
+    public String getAnimationPath() {
+        return animationPath;
+    }
+
+    public String getWalkAnimationName() {
+        return walkAnimationName;
     }
 
     public Texture getTexture() {

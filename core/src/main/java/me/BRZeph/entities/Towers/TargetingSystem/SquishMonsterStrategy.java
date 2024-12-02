@@ -9,6 +9,7 @@ public class SquishMonsterStrategy implements TargetingStrategy {
     @Override
     public Monster selectTarget(List<Monster> monstersInRange) {
         return monstersInRange.stream()
+            .filter(monster -> monster.getIncomingDamage() <= monster.getCurrentHealth())
             .min(Comparator.comparingDouble(Monster::getCurrentHealth))
             .orElse(null);
     }

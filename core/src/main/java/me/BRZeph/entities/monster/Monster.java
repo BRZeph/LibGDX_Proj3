@@ -2,20 +2,20 @@ package me.BRZeph.entities.monster;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import me.BRZeph.utils.Constants;
+import me.BRZeph.core.Assets.AdvancedAssetsManager;
 import me.BRZeph.utils.GlobalUtils;
 import me.BRZeph.utils.pathFinding.Node;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
 import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
 import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
 import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_WIDTH;
+import static me.BRZeph.utils.GlobalUtils.df;
 
 public class Monster {
     private float x, y;
@@ -29,16 +29,19 @@ public class Monster {
     public float currentHealth;
     private float incomingDamage;
     private float distanceToEnd;
+    private float animationTime = 0;
+    private Animation<TextureRegion> walkAnimation;
 
     public Monster(List<Node> path, MonsterType type) {
-        this.x = path.get(0).x;
-        this.y = path.get(0).y;
+        this.x = path.get(0).x * TILE_WIDTH;
+        this.y = path.get(0).y * TILE_HEIGHT;
         this.type = type;
         finishedPath = false;
         maxHealth = type.getMaxHealth();
         currentHealth = maxHealth;
         incomingDamage = 0;
         distanceToEnd = path.size()*TILE_WIDTH;
+        this.walkAnimation = AdvancedAssetsManager.getAnimation(type.getWalkAnimationName());
     }
 
     @Override
@@ -54,38 +57,35 @@ public class Monster {
     }
 
     public void update(float delta, List<Node> path) {
-        this.path = path; // Update the path
-        if (path == null || path.isEmpty()) return; // Check if path is valid
+        this.path = path;
+        if (path == null || path.isEmpty()) return;
 
-        // Get the current target node
         Node targetNode = path.get(currentNodeIndex);
 
-        // Calculate the target position
         float targetX = (targetNode.x + 0.5f) * TILE_WIDTH - type.width/2;
         float targetY = (targetNode.y + 0.5f) * TILE_HEIGHT - type.height/2;
 
-        // Calculate the distance to the target node
         float dx = targetX - x;
         float dy = targetY - y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        // Move towards the target node
-        if (distance > 4) { // Move if not close enough
-            float speed = type.getSpeed(); // Speed of the monster
-            x += (dx / distance) * speed * delta; // Move x
-            y += (dy / distance) * speed * delta; // Move y
+        if (distance > 4) {
+            float speed = type.getSpeed();
+            x += (dx / distance) * speed * delta;
+            y += (dy / distance) * speed * delta;
             distanceToEnd -= speed*delta;
         } else {
-            // Reached the target node
             currentNodeIndex++;
             if (currentNodeIndex >= path.size()) {
                 finishedPath = true;
-                currentNodeIndex = path.size() - 1; // Keep it at the last node
+                currentNodeIndex = path.size() - 1;
             }
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer) {
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, float delta) {
+        animationTime += delta;
+
         float barWidth = HEALTH_BAR_WIDTH;
         float barHeight = HEALTH_BAR_HEIGHT;
         float barX = getX() + type.getWidth()/2 - barWidth/2;
@@ -107,7 +107,7 @@ public class Monster {
 
         // Health Bar.
         batch.begin();
-        String healthText = getCurrentHealth() + " / " + getMaxHealth();
+        String healthText = df.format(getCurrentHealth()) + " / " + getMaxHealth();
 
         GlyphLayout layout = new GlyphLayout(font, healthText); // For centering text
         float textX = barX + (barWidth - layout.width) / 2;  // Centering text horizontally over the bar
@@ -116,9 +116,21 @@ public class Monster {
         font.draw(batch, healthText, textX, textY);
         batch.end();
 
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationTime, true);
+
         batch.begin();
-        batch.draw(type.getTexture(),x , y, type.getWidth(), type.getHeight()); // Render using texture from enum
+        batch.draw(
+            currentFrame,
+            x , y,
+            type.getWidth(), type.getHeight()
+        ); // Render using texture from enum
         batch.end();
+    }
+
+    public float getDistanceToPoint(int xPos, int yPos) {
+        float dx = xPos - x;
+        float dy = yPos - y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
     public float getIncomingDamage() {

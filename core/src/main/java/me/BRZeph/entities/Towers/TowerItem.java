@@ -1,7 +1,6 @@
 package me.BRZeph.entities.Towers;
 
-import com.badlogic.gdx.graphics.Texture;
-import me.BRZeph.core.CurrencyManager;
+import me.BRZeph.core.Managers.CurrencyManager;
 
 public class TowerItem {
     private TowerType type;
@@ -12,6 +11,16 @@ public class TowerItem {
         this.goldPrice = getGoldPrice(type);
         this.essencePrice = getEssencePrice(type);
         this.momentumPrice = getMomentumPrice(type);
+    }
+
+    @Override
+    public String toString() {
+        return "TowerItem{" +
+            "type=" + type.name() +
+            ", goldPrice=" + goldPrice +
+            ", essencePrice=" + essencePrice +
+            ", momentumPrice=" + momentumPrice +
+            '}';
     }
 
     public static float getGoldPrice(TowerType type) {

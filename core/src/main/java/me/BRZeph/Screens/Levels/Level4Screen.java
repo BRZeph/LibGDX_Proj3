@@ -1,7 +1,7 @@
 package me.BRZeph.Screens.Levels;
 
 import com.badlogic.gdx.assets.AssetManager;
-import me.BRZeph.core.ScreenManager;
+import me.BRZeph.core.Managers.ScreenManager;
 
 public class Level4Screen extends BaseLevelScreen{
     public Level4Screen(ScreenManager screenManager, AssetManager assetManager) {

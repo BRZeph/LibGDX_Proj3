@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static me.BRZeph.utils.GlobalUtils.consoleLog;
+
 public class Wave {
     private List<SpawnRule> spawnRules;
     private Map<MonsterType, List<SpawnBehavior>> behaviors;
@@ -55,9 +57,9 @@ public class Wave {
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer){
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, float delta){
         for (Monster monster : monsterList) {
-            monster.render(batch, font, shapeRenderer);
+            monster.render(batch, font, shapeRenderer, delta);
         }
     }
 
@@ -114,7 +116,14 @@ public class Wave {
         }
         if (endWave && monsterList.isEmpty()) {
             active = false;
+            finishedWave();
         }
+    }
+
+    private void finishedWave() {
+        consoleLog("monster list size -> " + monsterList.size() + "\n" +
+            "dead monster list size - > " + monsterDied.size() + "\n" +
+            "monster reached the end list size -> " + monsterReachedEnd.size());
     }
 
     private void spawnMonsters(float delta) {

@@ -5,6 +5,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import me.BRZeph.Main;
 import me.BRZeph.utils.Constants;
 
+import static me.BRZeph.utils.Constants.SCREEN_HEIGHT;
+import static me.BRZeph.utils.Constants.SCREEN_WIDTH;
+
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
@@ -20,7 +23,7 @@ public class Lwjgl3Launcher {
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("LibGDX_Proj3");
-        configuration.setWindowedMode(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+        configuration.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         configuration.useVsync(true);
         configuration.setForegroundFPS(60);
         configuration.setResizable(false);
