@@ -2,25 +2,17 @@ package me.BRZeph.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import me.BRZeph.Main;
 import me.BRZeph.core.Assets.AdvancedAssetsManager;
 import me.BRZeph.entities.Map.TileMap;
 import me.BRZeph.entities.Map.TileType;
 import me.BRZeph.entities.Towers.TowerItem;
-import me.BRZeph.utils.Constants;
-import me.BRZeph.utils.GlobalUtils;
 
-import static me.BRZeph.utils.Constants.Paths.Animations.PLAYER_WALK_ANIMATION;
 import static me.BRZeph.utils.Constants.Paths.Animations.PLAYER_WALK_ANIMATION_NAME;
-import static me.BRZeph.utils.Constants.Values.PlayerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.PlayerValues.*;
 
 public class Player {
     private Vector2 position;

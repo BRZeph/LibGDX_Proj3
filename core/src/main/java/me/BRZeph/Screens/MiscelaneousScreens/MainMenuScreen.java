@@ -7,8 +7,9 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import me.BRZeph.core.Managers.ScreenManager;
-import me.BRZeph.utils.Constants;
 import me.BRZeph.utils.GlobalUtils;
+
+import static me.BRZeph.utils.Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND;
 
 public class MainMenuScreen implements Screen, InputProcessor {
     private final ScreenManager screenManager;
@@ -27,9 +28,9 @@ public class MainMenuScreen implements Screen, InputProcessor {
         loadAssets();
     }
     private void loadAssets(){
-        assetManager.load(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND, Texture.class);
+        assetManager.load(MAIN_MENU_BACKGROUND, Texture.class);
         assetManager.finishLoading();
-        backgroundTexture = assetManager.get(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND, Texture.class);
+        backgroundTexture = assetManager.get(MAIN_MENU_BACKGROUND, Texture.class);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         GlobalUtils.consoleLog("Calling dispose method of MainMenuScreen");
-        assetManager.unload(Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND);
+        assetManager.unload(MAIN_MENU_BACKGROUND);
     }
 
     @Override
@@ -62,6 +63,8 @@ public class MainMenuScreen implements Screen, InputProcessor {
             case Input.Keys.NUM_3:
                 screenManager.showLevelSelector();
                 break;
+            case Input.Keys.NUM_6:
+                screenManager.beginAI(1);
             default:
                 return false;
         }

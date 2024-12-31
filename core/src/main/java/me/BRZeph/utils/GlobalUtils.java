@@ -4,14 +4,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import me.BRZeph.entities.Map.TileType;
-import me.BRZeph.entities.Towers.TowerType;
 
 import java.text.DecimalFormat;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
-import static me.BRZeph.utils.Constants.Values.TowerValues.ArcherTowerValues.ARCHER_TOWER_ATTACK_BAR_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.ArcherTowerValues.ARCHER_TOWER_ATTACK_BAR_WIDTH;
 
 public class GlobalUtils {
     public static final DecimalFormat df = new DecimalFormat("#.##");

@@ -2,11 +2,13 @@ package me.BRZeph.entities.Map;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import me.BRZeph.Main;
+import me.BRZeph.TowerDefenseGame;
+import me.BRZeph.entities.Towers.TowerType;
 
 import java.util.Objects;
 
 import static me.BRZeph.core.Assets.BasicAssetsManager.getTileStateTexture;
+import static me.BRZeph.entities.Towers.TowerType.*;
 import static me.BRZeph.utils.Constants.Paths.TilesTexturesPath.*;
 import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
 
@@ -15,6 +17,7 @@ public class TileType {
     public static final TileType WATER = new TileType(WATER_TILE_IDLE, false, true, false);
     public static final TileType STARTING_POINT = new TileType(STARTING_POINT_TILE_IDLE, true, false, false);
     public static final TileType ENDING_POINT = new TileType(ENDING_POINT_TILE_IDLE, true, false, false);
+
     public static final TileType HERO_ROOM_WALL = new TileType(HERO_WALL_TILE_IDLE,false, false, false);
     public static final TileType HERO_ROOM_CORNER = new TileType(HERO_CORNER_TILE_IDLE,false, false, false);
     public static final TileType HERO_ROOM_FLOOR = new TileType(HERO_FLOOR_TILE_IDLE,false, false, false);
@@ -27,6 +30,12 @@ public class TileType {
     WHEN CREATING A NEW TILE TYPE:
     -> put the conversion in the getTileByNumber method.
     -> put the textures in the AdvancedAssetsManager class.
+     */
+
+    /*
+    BUILDABLE TILES == !WALKABLE TILES
+    -> tiles that are buildable aren't walkable.
+    -> tiles that are walkable aren't buildable.
      */
 
     private Texture texture;
@@ -42,8 +51,8 @@ public class TileType {
     private final Texture facingUpTexture;
 
     private TileType(String textureFilePath, boolean isWalkable, boolean isBuildable, boolean isTurret) {
-        this.facingUpTexture = Main.getAssetManager().get(textureFilePath);
-        this.texture = Main.getAssetManager().get(textureFilePath);
+        this.facingUpTexture = TowerDefenseGame.getAssetManager().get(textureFilePath);
+        this.texture = TowerDefenseGame.getAssetManager().get(textureFilePath);
         this.isWalkable = isWalkable;
         this.isBuildable = isBuildable;
         this.isTurret = isTurret;
@@ -85,6 +94,18 @@ public class TileType {
     -> 900 ~ 999: hero room.
     -> 1000 ~ 1500: towers (make upgraded towers different tiles? maybe).
      */
+
+    public static TileType getTileFromTowerItem(TowerType item){
+        if (item == ARCHER){
+            return ARCHER_TOWER;
+        } else if (item == CANNON){
+            return CANNON_TOWER;
+        } else if (item == LIGHTNING){
+            return LIGHTNING_TOWER;
+        } else {
+            throw new IllegalArgumentException("Invalid tower item -> " + item);
+        }
+    }
 
     public static TileType getTileByNumber(int tile){
         switch (tile){

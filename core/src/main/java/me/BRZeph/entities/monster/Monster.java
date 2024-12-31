@@ -5,16 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.core.Assets.AdvancedAssetsManager;
-import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.pathFinding.Node;
+import me.BRZeph.entities.Map.Node;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
-import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_HEIGHT;
-import static me.BRZeph.utils.Constants.Values.UIValues.HEALTH_BAR_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.HEALTH_BAR_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.HEALTH_BAR_WIDTH;
 import static me.BRZeph.utils.GlobalUtils.df;
 
 public class Monster {
@@ -33,8 +31,8 @@ public class Monster {
     private Animation<TextureRegion> walkAnimation;
 
     public Monster(List<Node> path, MonsterType type) {
-        this.x = path.get(0).x * TILE_WIDTH;
-        this.y = path.get(0).y * TILE_HEIGHT;
+        this.x = (path.get(0).x + 0.5f) * TILE_WIDTH - type.getWidth()/2;
+        this.y = (path.get(0).y + 0.5f) * TILE_HEIGHT - type.getHeight()/2;
         this.type = type;
         finishedPath = false;
         maxHealth = type.getMaxHealth();
@@ -62,8 +60,8 @@ public class Monster {
 
         Node targetNode = path.get(currentNodeIndex);
 
-        float targetX = (targetNode.x + 0.5f) * TILE_WIDTH - type.width/2;
-        float targetY = (targetNode.y + 0.5f) * TILE_HEIGHT - type.height/2;
+        float targetX = (targetNode.x + 0.5f) * TILE_WIDTH - type.width / 2;
+        float targetY = (targetNode.y + 0.5f) * TILE_HEIGHT - type.height / 2;
 
         float dx = targetX - x;
         float dy = targetY - y;
@@ -71,9 +69,22 @@ public class Monster {
 
         if (distance > 4) {
             float speed = type.getSpeed();
-            x += (dx / distance) * speed * delta;
-            y += (dy / distance) * speed * delta;
-            distanceToEnd -= speed*delta;
+            float moveDistance = speed * delta;
+
+            if (moveDistance >= distance) {
+                x = targetX;
+                y = targetY;
+                distanceToEnd -= distance;
+                currentNodeIndex++;
+                if (currentNodeIndex >= path.size()) {
+                    finishedPath = true;
+                    currentNodeIndex = path.size() - 1;
+                }
+            } else {
+                x += (dx / distance) * moveDistance;
+                y += (dy / distance) * moveDistance;
+                distanceToEnd -= moveDistance;
+            }
         } else {
             currentNodeIndex++;
             if (currentNodeIndex >= path.size()) {
@@ -107,7 +118,7 @@ public class Monster {
 
         // Health Bar.
         batch.begin();
-        String healthText = df.format(getCurrentHealth()) + " / " + getMaxHealth();
+        String healthText = df.format(getCurrentHealth()) + " / " + df.format(getMaxHealth());
 
         GlyphLayout layout = new GlyphLayout(font, healthText); // For centering text
         float textX = barX + (barWidth - layout.width) / 2;  // Centering text horizontally over the bar

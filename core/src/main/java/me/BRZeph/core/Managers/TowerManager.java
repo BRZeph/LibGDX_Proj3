@@ -21,33 +21,49 @@ public class TowerManager {
         this.selectedTower = null;
     }
 
-    public void placeTower(TileMap tileMap, TileType tileType, TowerType towerType, int tileX, int tileY) {
+    public Tower placeTower(TileMap tileMap, TileType tileType, TowerType towerType, int tileX, int tileY, int wave) {
         tileMap.changeTile(tileX, tileY, tileType);
         switch (towerType){
             case ARCHER:
-                towers.add(new ArcherTower(towerType, tileX, tileY));
-                break;
+                ArcherTower archerTower = new ArcherTower(towerType, tileX, tileY);
+                archerTower.setWavePlaced(wave);
+                towers.add(archerTower);
+                return archerTower;
             case CANNON:
-                towers.add(new CannonTower(towerType, tileX, tileY));
-                break;
+                CannonTower cannonTower = new CannonTower(towerType, tileX, tileY);
+                cannonTower.setWavePlaced(wave);
+                towers.add(cannonTower);
+                return cannonTower;
             case LIGHTNING:
-                towers.add(new LightningTower(towerType, tileX, tileY));
-                break;
+                LightningTower lightningTower = new LightningTower(towerType, tileX, tileY);
+                lightningTower.setWavePlaced(wave);
+                towers.add(lightningTower);
+                return lightningTower;
             default:
                 throw new IllegalArgumentException("Unregistered tower type -> " + towerType);
         }
     }
 
-    public boolean canBuyTower(CurrencyManager currencyManager, TowerItem towerItem){
-        if (towerItem.canBeBought(currencyManager)){
-            return true;
-        }
-        return false;
+    public static boolean canBuyTower(CurrencyManager currencyManager, TowerItem towerItem){
+        return towerItem.canBeBought(currencyManager);
     }
+
+    public static boolean canBuyTower(CurrencyManager currencyManager, TowerType type){
+        return currencyManager.getGold() >= type.getGoldCost() &&
+            currencyManager.getEssence() >= type.getEssenceCost() &&
+            currencyManager.getMomentum() >= type.getMomentumCost();
+    }
+
     public void buyItem(CurrencyManager currencyManager, TowerItem towerItem){
         currencyManager.spendGold(towerItem.getGoldPrice());
         currencyManager.spendEssence(towerItem.getEssencePrice());
         currencyManager.spendMomentum(towerItem.getMomentumPrice());
+    }
+
+    public void buyItem(CurrencyManager currencyManager, TowerType towerType){
+        currencyManager.spendGold(towerType.getGoldCost());
+        currencyManager.spendEssence(towerType.getEssenceCost());
+        currencyManager.spendMomentum(towerType.getMomentumCost());
     }
 
     public void update(float delta) {

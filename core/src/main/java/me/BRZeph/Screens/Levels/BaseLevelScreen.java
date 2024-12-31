@@ -2,7 +2,9 @@ package me.BRZeph.Screens.Levels;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.core.Managers.WaveManager;
 
 public abstract class BaseLevelScreen implements Screen {
     protected final AssetManager assetManager;
@@ -13,7 +15,15 @@ public abstract class BaseLevelScreen implements Screen {
         this.screenManager = screenManager;
     }
 
-    protected abstract void loadAssets(); // Each level implements this
+    public abstract void setAI(boolean value);
+
+    protected abstract void loadAssets();
+
+    public abstract boolean isPlayerDead();
+
+    public abstract OrthographicCamera getCamera();
+
+    public abstract WaveManager getWaveManager();
 
     @Override
     public abstract void show();

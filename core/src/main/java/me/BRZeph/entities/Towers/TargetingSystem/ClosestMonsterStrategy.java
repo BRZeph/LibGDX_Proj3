@@ -2,14 +2,12 @@ package me.BRZeph.entities.Towers.TargetingSystem;
 
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
 import me.BRZeph.entities.monster.Monster;
-import me.BRZeph.utils.Constants;
-import me.BRZeph.utils.GlobalUtils;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
 
 public class ClosestMonsterStrategy implements TargetingStrategy {
     private int towerXPos;

@@ -5,16 +5,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import me.BRZeph.entities.monster.Monster;
 import me.BRZeph.entities.monster.MonsterType;
-import me.BRZeph.utils.pathFinding.Node;
+import me.BRZeph.entities.Map.Node;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static me.BRZeph.utils.Constants.TIME_MULTIPLIER;
 import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 public class Wave {
-    private List<SpawnRule> spawnRules;
+    private Map<MonsterType, SpawnRule> spawnRules;
     private Map<MonsterType, List<SpawnBehavior>> behaviors;
     private List<Monster> monsterList;
     private List<Monster> monsterReachedEnd;
@@ -23,129 +25,143 @@ public class Wave {
     private List<SpawnRuleEndWave> endBehavior;
     private float waveClock;
     private boolean active;
+    private HashMap<MonsterType, Integer> monstersCount;
 
-    public Wave(List<SpawnRule> spawnRules, Map<MonsterType, List<SpawnBehavior>> behaviors,
-                List<SpawnRuleEndWave> endBehavior, List<Node> path) {
-        this.spawnRules = spawnRules;
+    public Wave(Map<MonsterType, List<SpawnBehavior>> behaviors, List<SpawnRuleEndWave> endBehavior, List<Node> path) {
         this.behaviors = behaviors;
+        this.endBehavior = endBehavior;
         this.waveClock = 0;
         this.active = false;
         this.monsterList = new ArrayList<>();
         this.monsterReachedEnd = new ArrayList<>();
         this.monsterDied = new ArrayList<>();
         this.path = path;
-        this.endBehavior = endBehavior;
+        this.spawnRules = new HashMap<>();
+        initializeMonstersCount();
+        initializeSpawnRules();
+    }
+
+    private void initializeMonstersCount() {
+        this.monstersCount = new HashMap<>();
+        for (MonsterType type : MonsterType.values()) {
+            monstersCount.put(type, 0);
+        }
+    }
+
+    private void initializeSpawnRules() {
+        for (SpawnRuleEndWave ruleEndWave : endBehavior){
+            MonsterType type = ruleEndWave.getMonsterType();
+            SpawnRule defaultRule = new SpawnRule(type, 0, 0, 10000);
+            spawnRules.put(type, defaultRule);
+
+        }
     }
 
     public void update(float delta) {
         if (active) {
-            waveClock += delta;
+            waveClock += delta * TIME_MULTIPLIER;
+            updateSpawnRules();
             spawnMonsters(delta);
-            handleSpawnBehaviors();
-
-            if (monsterList.isEmpty()) {
-                return;
-            }
-            for (Monster monster : monsterList) {
-                monster.update(delta, path);
-                if (monster.isFinishedPath()){
-                    monsterReachedEnd.add(monster);
-                } else if (monster.getCurrentHealth() <= 0){
-                    monsterDied.add(monster);
-                }
-            }
+            updateMonsters(delta);
         }
     }
 
-    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, float delta){
-        for (Monster monster : monsterList) {
-            monster.render(batch, font, shapeRenderer, delta);
+    private void updateSpawnRules() {
+        for (Map.Entry<MonsterType, SpawnRule> entry : spawnRules.entrySet()) {
+            MonsterType type = entry.getKey();
+            SpawnRule rule = entry.getValue();
+
+            if (behaviors.containsKey(type)) {
+                for (SpawnBehavior behavior : behaviors.get(type)) {
+                    if (waveClock >= behavior.getTriggerTime() && !behavior.isBehaviorApplied()) {
+                        rule.setSpawnInterval(behavior.getNewInterval());
+                        rule.setAmountPerSpawn(behavior.getAmountPerSpawn());
+                        behavior.setBehaviorApplied(true);
+                    }
+                }
+            }
+
+            for (SpawnRuleEndWave endRule : endBehavior) {
+                if (endRule.getMonsterType() != type) {
+                    continue;
+                }
+                if (waveClock >= endRule.getStartTime() && !endRule.isAppliedBehavior()) {
+                    rule.setSpawnInterval(endRule.getSpawnInterval());
+                    rule.setAmountPerSpawn(endRule.getAmountPerSpawn());
+                    endRule.setAppliedBehavior(true);
+                }
+                if (waveClock >= endRule.getTimeLimit()) {
+                    endRule.setEndBehavior(true);
+                    rule.setSpawnInterval(100000);
+                }
+            }
         }
+        checkEndWaveConditions();
     }
 
-    private void handleSpawnBehaviors() {
-        for (SpawnRule rule : spawnRules) {
-            MonsterType type = rule.getMonsterType();
-
-            if (!behaviors.containsKey(type)) {
-                continue;
-            }
-            for (int i = 0; i < behaviors.get(type).size(); i++){
-                SpawnBehavior behavior = behaviors.get(type).get(i);
-
-                if (waveClock < behavior.getTriggerTime()) {
-                    continue;
-                }
-                if (!behavior.isBehaviorApplied()) {
-                    rule.setSpawnInterval(behavior.getNewInterval());
-                    rule.setAmountPerSpawn(behavior.getAmountPerSpawn());
-                    behavior.setBehaviorApplied(true);
-                }
-                if (i != behaviors.get(type).size() - 1) {
-                    continue;
-                }// this is here to make sure that all behaviors have been applied
-
-
-
-                // ruleEndWave.
-                for (SpawnRuleEndWave ruleEndWave : endBehavior){
-                    if (ruleEndWave.getMonsterType() != type) {
-                        continue;
-                    }
-
-                    if (!ruleEndWave.isAppliedBehavior() && waveClock > ruleEndWave.getStartTime()) {
-                        rule.setSpawnInterval(ruleEndWave.getSpawnInterval());
-                        rule.setAmountPerSpawn(ruleEndWave.getAmountPerSpawn());
-                        ruleEndWave.setAppliedBehavior(true);
-                        break;
-                    }
-
-                    if (waveClock > ruleEndWave.getTimeLimit()){
-                        ruleEndWave.setEndBehavior(true);
-                        rule.setSpawnInterval(100000);
-                    }
-                }
-            }
-        }
+    private void checkEndWaveConditions() {
         boolean endWave = true;
-        for (SpawnRuleEndWave ruleEndWave : endBehavior){
+        for (SpawnRuleEndWave ruleEndWave : endBehavior) {
+            if (waveClock > ruleEndWave.getTimeLimit()){
+                ruleEndWave.setEndBehavior(true);
+                ruleEndWave.setSpawnInterval(100000);
+            }
             if (!ruleEndWave.isEndBehavior()) {
                 endWave = false;
                 break;
             }
         }
         if (endWave && monsterList.isEmpty()) {
-            active = false;
             finishedWave();
         }
     }
 
-    private void finishedWave() {
-        consoleLog("monster list size -> " + monsterList.size() + "\n" +
-            "dead monster list size - > " + monsterDied.size() + "\n" +
-            "monster reached the end list size -> " + monsterReachedEnd.size());
-    }
-
     private void spawnMonsters(float delta) {
-        for (SpawnRule rule : spawnRules) {
-            rule.setRuleClock(rule.getRuleClock() + delta);
-            MonsterType type = rule.getMonsterType();
+        for (Map.Entry<MonsterType, SpawnRule> entry : spawnRules.entrySet()) {
+            MonsterType type = entry.getKey();
+            SpawnRule rule = entry.getValue();
 
-            if (rule.isFirstSpawn()){
-                if (waveClock > rule.getStartTime()){
+            rule.setRuleClock(rule.getRuleClock() + delta * TIME_MULTIPLIER);
+
+            if (rule.isFirstSpawn()) {
+                if (waveClock > rule.getStartTime()) {
                     rule.setRuleClock(0);
                     rule.setFirstSpawn(false);
-                } else {
-                    break;
                 }
-            }
-            if (rule.getRuleClock() - rule.getSpawnInterval() > 0 && !rule.isFirstSpawn()) {
+            } else if (rule.getRuleClock() >= rule.getSpawnInterval()) {
                 rule.setRuleClock(0);
                 for (int i = 0; i < rule.getAmountPerSpawn(); i++) {
                     monsterList.add(new Monster(path, type));
+                    monstersCount.put(type, monstersCount.get(type) + 1);
                 }
             }
         }
+    }
+
+    private void updateMonsters(float delta) {
+        List<Monster> toRemove = new ArrayList<>();
+        for (Monster monster : monsterList) {
+            monster.update(delta, path);
+            if (monster.isFinishedPath()) {
+                monsterReachedEnd.add(monster);
+                toRemove.add(monster);
+            } else if (monster.getCurrentHealth() <= 0) {
+                monsterDied.add(monster);
+                toRemove.add(monster);
+            }
+        }
+        monsterList.removeAll(toRemove);
+    }
+
+    public void render(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer, float delta) {
+        for (Monster monster : monsterList) {
+            monster.render(batch, font, shapeRenderer, delta);
+        }
+    }
+
+    private void finishedWave() {
+        active = false;
+        consoleLog("[INFO] Finished wave");
     }
 
     public void end() {
@@ -164,10 +180,6 @@ public class Wave {
         return waveClock;
     }
 
-    public List<SpawnRule> getSpawnRules() {
-        return spawnRules;
-    }
-
     public List<Monster> getMonsterList() {
         return monsterList;
     }
@@ -178,5 +190,9 @@ public class Wave {
 
     public List<Monster> getMonsterDied() {
         return monsterDied;
+    }
+
+    public HashMap<MonsterType, Integer> getMonstersCount() {
+        return monstersCount;
     }
 }

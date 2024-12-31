@@ -1,6 +1,11 @@
 package me.BRZeph.core.Managers;
 
+import me.BRZeph.entities.Towers.TowerType;
 import me.BRZeph.entities.monster.MonsterType;
+
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.ArcherTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.CannonTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.LightningTowerValues.*;
 
 public class CurrencyManager {
     private float gold;     // CurrencyType = 0.
@@ -65,6 +70,45 @@ public class CurrencyManager {
         addGold(type.getGoldLoot());
         addEssence(type.getEssenceLoot());
         addMomentum(type.getMomentumLoot());
+    }
+
+    private double getGoldCost(TowerType towerType) {
+        switch (towerType) {
+            case ARCHER:
+                return ARCHER_TOWER_PRICE_GOLD;
+            case CANNON:
+                return CANNON_TOWER_PRICE_GOLD;
+            case LIGHTNING:
+                return LIGHTNING_TOWER_PRICE_GOLD;
+            default:
+                return 0;
+        }
+    }
+
+    private double getEssenceCost(TowerType towerType) {
+        switch (towerType) {
+            case ARCHER:
+                return ARCHER_TOWER_PRICE_ESSENCE;
+            case CANNON:
+                return CANNON_TOWER_PRICE_ESSENCE;
+            case LIGHTNING:
+                return LIGHTNING_TOWER_PRICE_ESSENCE;
+            default:
+                return 0;
+        }
+    }
+
+    private double getMomentumCost(TowerType towerType) {
+        switch (towerType) {
+            case ARCHER:
+                return ARCHER_TOWER_PRICE_MOMENTUM;
+            case CANNON:
+                return CANNON_TOWER_PRICE_MOMENTUM;
+            case LIGHTNING:
+                return LIGHTNING_TOWER_PRICE_MOMENTUM;
+            default:
+                return 0;
+        }
     }
 }
 

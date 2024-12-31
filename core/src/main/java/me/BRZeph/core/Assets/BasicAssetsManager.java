@@ -9,30 +9,25 @@ import me.BRZeph.utils.GlobalUtils;
 import java.util.HashMap;
 
 import static me.BRZeph.entities.Map.TileType.*;
-import static me.BRZeph.entities.Map.TileType.ENDING_POINT;
-import static me.BRZeph.utils.Constants.Paths.MonstersTexturesPath.SKELETON_TEXTURE;
-import static me.BRZeph.utils.Constants.Paths.MonstersTexturesPath.ZOMBIE_TEXTURE;
+import static me.BRZeph.utils.Constants.Paths.MonstersTexturesPath.*;
 import static me.BRZeph.utils.Constants.Paths.TilesTexturesPath.*;
 import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
 import static me.BRZeph.utils.Constants.Paths.UIPath.*;
-import static me.BRZeph.utils.Constants.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH;
 
 public class BasicAssetsManager {
 
     private static final HashMap<TileType, HashMap<String, Texture>> tileStates = new HashMap<>();
 
     public static void loadCommonAssets(AssetManager assetManager){
-        GlobalUtils.consoleLog("Loading textures ...");
         loadTileTextures(assetManager);
         loadMonsterTexture(assetManager);
         loadUITextures(assetManager);
         loadTowerTextures(assetManager);
         loadMapTextureStates(assetManager);
-        GlobalUtils.consoleLog("All textures have been loaded :D");
     }
 
     private static void loadTileTextures(AssetManager assetManager){
-        GlobalUtils.consoleLog("Loading tile textures ...");
         assetManager.load(GRASS_TILE_IDLE, Texture.class);
         assetManager.load(GRASS_TILE_FIRE, Texture.class);
         assetManager.load(WATER_TILE_IDLE, Texture.class);
@@ -51,14 +46,21 @@ public class BasicAssetsManager {
     }
 
     private static void loadMonsterTexture(AssetManager assetManager){
-        GlobalUtils.consoleLog("Loading monster textures ...");
         assetManager.load(ZOMBIE_TEXTURE, Texture.class);
         assetManager.load(SKELETON_TEXTURE, Texture.class);
+        assetManager.load(DEMONIC_IMP_TEXTURE, Texture.class);
+        assetManager.load(HELLFIRE_BRUTE_TEXTURE, Texture.class);
+        assetManager.load(SOUL_REAPER_TEXTURE, Texture.class);
+        assetManager.load(DOOM_HERALD_TEXTURE, Texture.class);
+        assetManager.load(VOID_WRAITH_TEXTURE, Texture.class);
+        assetManager.load(CHRONO_STALKER_TEXTURE, Texture.class);
+        assetManager.load(INFERNAL_JUGGERNAUT_TEXTURE, Texture.class);
+        assetManager.load(TEMPORAL_SHADE_TEXTURE, Texture.class);
+        assetManager.load(ABYSSAL_MATRON_TEXTURE, Texture.class);
         assetManager.finishLoading();
     }
 
     private static void loadUITextures(AssetManager assetManager){
-        GlobalUtils.consoleLog("Loading UI textures ...");
         assetManager.load(TEST_BUTTON_TEXTURE_PATH, Texture.class);
         assetManager.load(TOWER_SHOP_BACKGROUND_UI, Texture.class);
         assetManager.load(TOWER_SHOP_FRONT_UI, Texture.class);
@@ -69,7 +71,6 @@ public class BasicAssetsManager {
     }
 
     private static void loadTowerTextures(AssetManager assetManager) {
-        GlobalUtils.consoleLog("Loading tower textures ...");
         assetManager.load(ARCHER_TOWER_PLACED, Texture.class);
         assetManager.load(ARCHER_TOWER_ITEM, Texture.class);
         assetManager.load(ARCHER_TOWER_PROJECTILE, Texture.class);

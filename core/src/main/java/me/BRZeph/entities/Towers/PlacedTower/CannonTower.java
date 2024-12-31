@@ -1,24 +1,22 @@
 package me.BRZeph.entities.Towers.PlacedTower;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import me.BRZeph.core.Projectile;
 import me.BRZeph.core.Managers.WaveManager;
+import me.BRZeph.entities.Projectile;
 import me.BRZeph.entities.Towers.TargetingSystem.*;
 import me.BRZeph.entities.Towers.TowerType;
 import me.BRZeph.entities.monster.Monster;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
-import static me.BRZeph.utils.Constants.Values.TowerValues.CannonTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.CannonTowerValues.*;
 import static me.BRZeph.utils.GlobalUtils.drawTowerAttackCooldown;
 
 public class CannonTower implements Tower{
@@ -28,17 +26,24 @@ public class CannonTower implements Tower{
     protected float cooldownClock;
     protected int xPos;
     protected int yPos;
+    protected int kills;
+    protected int shotsFired;
+    protected int wavePlaced;
     protected TowerType type;
     protected Texture projectileTexture;
     protected TargetingStrategy targetingStrategy;
     protected List<Projectile> activeProjectiles;
-    protected final List<TargetingStrategy> strategies;
     protected int currentStrategyIndex;
+    protected final List<TargetingStrategy> strategies;
+    protected float damageDealt;
 
     public CannonTower(TowerType type, int xPos, int yPos) {
         this.xPos = xPos; // Tile position.
         this.yPos = yPos; // Tile position.
         this.type = type;
+        this.damageDealt = 0;
+        this.kills = 0;
+        this.shotsFired = 0;
 
         this.attackRange = type.getRange();
         this.damage = type.getDamage();
@@ -106,10 +111,15 @@ public class CannonTower implements Tower{
                     .collect(Collectors.toList());
                 for (Monster monster : aoeAffectedMonsters){
                     monster.takeDamage(CANNON_TOWER_AOE_DAMAGE);
+                    damageDealt += CANNON_TOWER_AOE_DAMAGE;
                 }
                 projectile.getTarget().takeDamage(damage);
                 projectile.getTarget().subIncomingDamage(damage);
                 projectileIterator.remove();
+                damageDealt += damage;
+                if (projectile.getTarget().getCurrentHealth() <= 0){
+                    addKills();
+                }
             }
         }
     }
@@ -133,6 +143,7 @@ public class CannonTower implements Tower{
             damage, target, projectileTexture
         );
         activeProjectiles.add(projectile);
+        shotsFired++;
     }
 
     @Override
@@ -164,6 +175,41 @@ public class CannonTower implements Tower{
     public void setPreviousTargetingStrategy() {
         currentStrategyIndex = (currentStrategyIndex - 1 + strategies.size()) % strategies.size();
         this.targetingStrategy = strategies.get(currentStrategyIndex);
+    }
+
+    @Override
+    public int getShotsFired() {
+        return shotsFired;
+    }
+
+    @Override
+    public int getWavePlaced() {
+        if (wavePlaced != -1) return wavePlaced;
+        throw new IllegalArgumentException("ERROR: Unregistered parameter. After placing the tower, use .setWavePlaced()");
+    }
+
+    @Override
+    public void setWavePlaced(int wave) {
+        this.wavePlaced = wave;
+    }
+    @Override
+    public void addKills() {
+        this.kills += 1;
+    }
+
+    @Override
+    public void addDamageDealt(float damage) {
+        this.damageDealt += damage;
+    }
+
+    @Override
+    public float getDamageDealt() {
+        return damageDealt;
+    }
+
+    @Override
+    public int getKills() {
+        return kills;
     }
 
     @Override

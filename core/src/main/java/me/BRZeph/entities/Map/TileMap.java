@@ -3,9 +3,7 @@ package me.BRZeph.entities.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.BRZeph.Main;
-import me.BRZeph.utils.GlobalUtils;
-import me.BRZeph.utils.pathFinding.Node;
+import me.BRZeph.TowerDefenseGame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 public class TileMap {
     private Tile[][] map;
@@ -27,6 +26,8 @@ public class TileMap {
     private int pathEndPointX;
     private int pathEndPointY;
     private List<Node> path;
+    private List<Tile> buildableTiles;
+    private List<Tile> walkableTiles;
 
     public TileMap(String filePath) {
         this.filePath = filePath;
@@ -41,7 +42,7 @@ public class TileMap {
     }
 
     private void loadMap(String filePath) {
-        GlobalUtils.consoleLog("Loading map ...");
+        consoleLog("Loading map ...");
         List<Tile[]> rows = new ArrayList<>();
         try (BufferedReader reader = Gdx.files.internal(filePath).reader(512)) {
             String line;
@@ -58,7 +59,7 @@ public class TileMap {
                 rows.add(row);
             }
         } catch (IOException e) {
-            GlobalUtils.consoleLog("Error while loading map");
+            consoleLog("Error while loading map");
             e.printStackTrace();
         }
 
@@ -66,16 +67,17 @@ public class TileMap {
         for (int i = 0; i < rows.size(); i++) {
             map[i] = rows.get(rows.size() - 1 - i); // Invert Y-axis by reversing row order
         }
-        GlobalUtils.consoleLog("Map loaded");
+        consoleLog("Map loaded");
     }
 
     public void loadMapAndFindPath(String filePath) {
         loadMap(filePath);
+        initializeBuildableTiles();
         createPath();
     }
 
     private void createPath() {
-        GlobalUtils.consoleLog("Finding starting and ending points for the path...");
+        consoleLog("Finding starting and ending points for the path...");
         int startX = -1, startY = -1;
         int endX = -1, endY = -1;
 
@@ -83,6 +85,8 @@ public class TileMap {
             for (int x = 0; x < map[y].length; x++) {
                 Tile tile = map[y][x]; // This is not wrong, it should ALWAYS be map[y][x] and NOT map[x][y].
                 //inverting the end point and start point, otherwise the path starts at the end point
+                tile.setX(x); // Initializing variables.
+                tile.setY(y); // Initializing variables.
 
                 if (tile.isEndingPoint()) {
                     pathStartPointX = x;
@@ -100,13 +104,13 @@ public class TileMap {
 
         // Check if starting and ending points were found
         if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
-            GlobalUtils.consoleLog("Successfully found starting and ending point");
+            consoleLog("Successfully found starting and ending point");
             path = findPath();
             if (path == null) {
                 pathNotFound();
             }
         } else {
-            GlobalUtils.consoleLog("Starting or ending point not found in the map.\n" +
+            consoleLog("Starting or ending point not found in the map.\n" +
                 "startPos -> " + startX + ";" + startY + "\n" +
                 "endPos -> " + endX + ";" + endY);
         }
@@ -114,7 +118,7 @@ public class TileMap {
 
     // Placeholder method to be implemented later
     private void pathNotFound() {
-        GlobalUtils.consoleLog("INVALID PATH");
+        consoleLog("INVALID PATH");
     }
 
     public void render(SpriteBatch spriteBatch) {
@@ -157,7 +161,7 @@ public class TileMap {
     }
 
     public List<Node> findPath() {
-        GlobalUtils.consoleLog("Finding path...");
+        consoleLog("Finding path...");
         int startX = pathStartPointX;
         int startY = pathStartPointY;
         int endX = pathEndPointX;
@@ -167,7 +171,7 @@ public class TileMap {
         Node endNode = new Node(endX, endY, map[endY][endX].isWalkable());
 
         if (!startNode.walkable || !endNode.walkable) {
-            GlobalUtils.consoleLog("Unwalkable starting or ending point");
+            consoleLog("Unwalkable starting or ending point");
             return null; // Cannot start or end on non-walkable tiles
         }
 
@@ -184,14 +188,14 @@ public class TileMap {
 
         while (!openList.isEmpty()) {
             if (iterations > maxIterations) {
-                Main.getScreenManager().showMainMenu();
-                GlobalUtils.consoleLog("Error while loading path, took too long");
+                TowerDefenseGame.getScreenManager().showMainMenu();
+                consoleLog("Error while loading path, took too long");
                 return null;
             }
             iterations++;
 
             if (iterations % 1000 == 1){
-                GlobalUtils.consoleLog("Iteration number : " + iterations);
+                consoleLog("Iteration number : " + iterations);
             }
 
             Node currentNode = openList.poll();
@@ -199,7 +203,7 @@ public class TileMap {
 
             // If we reached the end node, reconstruct the path.
             if (currentNode.equals(endNode)) {
-                GlobalUtils.consoleLog("Successfully built path");
+                consoleLog("Successfully built path");
                 return buildPath(currentNode);
             }
 
@@ -220,7 +224,7 @@ public class TileMap {
             }
         }
 
-        GlobalUtils.consoleLog("Error while loading path, no path found");
+        consoleLog("Error while loading path, no path found");
         return null; // No path found
     }
 
@@ -269,6 +273,33 @@ public class TileMap {
             current = current.parent;
         }
         return path; // Return path in reverse order
+    }
+
+    private void initializeBuildableTiles() {
+        buildableTiles = new ArrayList<>();
+        walkableTiles = new ArrayList<>();
+        for (Tile[] tiles : map) {
+            for (Tile tile : tiles) {
+                if (tile == null) {
+                    continue;
+                }
+                if (tile.getType().getOriginalType().isBuildable){
+                    buildableTiles.add(tile);
+                } else {
+                    walkableTiles.add(tile);
+                }
+            }
+        }
+    }
+
+    public List<Tile> getBuildableTiles(){
+        initializeBuildableTiles();
+        return buildableTiles;
+    }
+
+    public List<Tile> getWalkableTiles(){
+        initializeBuildableTiles();
+        return walkableTiles;
     }
 
     public int getPathStartPointX() {

@@ -30,7 +30,6 @@ Position of the regions inside the TextureRegion.split():
  */
 
     private static void loadAnimations(AssetManager assetManager) { // Load all atlases before registering the frames.
-        GlobalUtils.consoleLog("Loading advanced asset: animations ...");
         assetManager.load(PLAYER_WALK_ANIMATION, Texture.class);
         assetManager.load(MONSTER_WALK_ANIMATION, Texture.class);
         /*
@@ -45,16 +44,29 @@ Position of the regions inside the TextureRegion.split():
         load all other animations here (remember to unload atlas).
          */
 
-        GlobalUtils.consoleLog("Finished loading advanced asset: animations :D");
     }
 
     private static void loadMonstersWalkAnimation(AssetManager assetManager) {
-        Texture zombieAtlas = assetManager.get(MONSTER_WALK_ANIMATION, Texture.class);
 
-        TextureRegion[][] regions = TextureRegion.split(zombieAtlas, 64, 64);
+        Texture MonsterWalkAtlas = assetManager.get(MONSTER_WALK_ANIMATION, Texture.class);
+        TextureRegion[][] regions = TextureRegion.split(MonsterWalkAtlas, 64, 64);
 
-        Array<TextureRegion> zombieWalkFrames = new Array<>();
-        zombieWalkFrames.addAll(
+        LoadZombieWalkAnimation(regions);
+        LoadSkeletonWalkAnimation(regions);
+        loadDemonicImpWalkAnimation(regions);
+        loadHellfireBruteWalkAnimation(regions);
+        loadSoulReaperWalkAnimation(regions);
+        loadDoomHeraldWalkAnimation(regions);
+        loadVoidWraithWalkAnimation(regions);
+        loadChronoStalkerWalkAnimation(regions);
+        loadInfernalJuggernautWalkAnimation(regions);
+        loadTemporalShadeWalkAnimation(regions);
+        loadAbyssalMatronWalkAnimation(regions);
+    }
+
+    private static void LoadSkeletonWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> skeletonWalkFrames = new Array<>();
+        skeletonWalkFrames.addAll(
             regions[0][0], // Frame 1
             regions[0][1], // Frame 2
             regions[0][2], // Frame 3
@@ -62,14 +74,15 @@ Position of the regions inside the TextureRegion.split():
             regions[0][4], // Frame 5
             regions[0][5]  // Frame 6
         );
-        Animation<TextureRegion> zombieWalk = new Animation<>(
-            ZOMBIE_WALK_FRAME_TIME, zombieWalkFrames, Animation.PlayMode.LOOP
+        Animation<TextureRegion> skeletonWalk = new Animation<>(
+            SKELETON_WALK_FRAME_TIME, skeletonWalkFrames, Animation.PlayMode.LOOP
         );
-        animations.put(ZOMBIE_WALK_ANIMATION_NAME, zombieWalk);
+        animations.put(SKELETON_WALK_ANIMATION_NAME, skeletonWalk);
+    }
 
-
-        Array<TextureRegion> skeletonWalkFrames = new Array<>();
-        skeletonWalkFrames.addAll(
+    private static void LoadZombieWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> zombieWalkFrames = new Array<>();
+        zombieWalkFrames.addAll(
             regions[1][0], // Frame 1
             regions[1][1], // Frame 2
             regions[1][2], // Frame 3
@@ -77,10 +90,109 @@ Position of the regions inside the TextureRegion.split():
             regions[1][4], // Frame 5
             regions[1][5]  // Frame 6
         );
-        Animation<TextureRegion> skeletonWalk = new Animation<>(
-            SKELETON_WALK_FRAME_TIME, skeletonWalkFrames, Animation.PlayMode.LOOP
+        Animation<TextureRegion> zombieWalk = new Animation<>(
+            ZOMBIE_WALK_FRAME_TIME, zombieWalkFrames, Animation.PlayMode.LOOP
         );
-        animations.put(SKELETON_WALK_ANIMATION_NAME, skeletonWalk);
+        animations.put(ZOMBIE_WALK_ANIMATION_NAME, zombieWalk);
+    }
+
+    private static void loadDemonicImpWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> demonicImpWalkFrames = new Array<>();
+        demonicImpWalkFrames.addAll(
+            regions[2][0] // Frame 1
+        );
+        Animation<TextureRegion> demonicImpWalk = new Animation<>(
+            DEMONIC_IMP_WALK_FRAME_TIME, demonicImpWalkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(DEMONIC_IMP_WALK_ANIMATION_NAME, demonicImpWalk);
+    }
+
+    private static void loadHellfireBruteWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> hellfireBruteWalkFrames = new Array<>();
+        hellfireBruteWalkFrames.addAll(
+            regions[3][0] // Frame 1
+        );
+        Animation<TextureRegion> hellfireBruteWalk = new Animation<>(
+            HELLFIRE_BRUTE_WALK_FRAME_TIME, hellfireBruteWalkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(HELLFIRE_BRUTE_WALK_ANIMATION_NAME, hellfireBruteWalk);
+    }
+
+    private static void loadSoulReaperWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[4][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            SOUL_REAPER_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(SOUL_REAPER_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadDoomHeraldWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[5][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            DOOM_HERALD_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(DOOM_HERALD_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadVoidWraithWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[6][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            VOID_WRAITH_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(VOID_WRAITH_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadChronoStalkerWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[7][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            CHRONO_STALKER_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(CHRONO_STALKER_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadInfernalJuggernautWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[8][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            INFERNAL_JUGGERNAUT_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(INFERNAL_JUGGERNAUT_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadTemporalShadeWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[9][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            TEMPORAL_SHADE_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(TEMPORAL_SHADE_WALK_ANIMATION_NAME, walkAnimation);
+    }
+
+    private static void loadAbyssalMatronWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[10][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            ABYSSAL_MATRON_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(ABYSSAL_MATRON_WALK_ANIMATION_NAME, walkAnimation);
     }
 
     private static void loadPlayerWalkAnimation(AssetManager assetManager) {

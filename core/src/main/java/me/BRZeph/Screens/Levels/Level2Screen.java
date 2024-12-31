@@ -1,9 +1,13 @@
 package me.BRZeph.Screens.Levels;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.core.Managers.WaveManager;
 
 public class Level2Screen extends BaseLevelScreen {
+    private float playerCurrentHealth;
+    private WaveManager waveManager;
     public Level2Screen(ScreenManager screenManager, AssetManager assetManager) {
         super(screenManager, assetManager);
     }
@@ -13,11 +17,23 @@ public class Level2Screen extends BaseLevelScreen {
 
     }
 
+    public WaveManager getWaveManager() {
+        return waveManager;
+    }
+    @Override
+    public OrthographicCamera getCamera() {
+        return null;
+    }
+
     @Override
     public void show() {
 
     }
 
+    @Override
+    public void setAI(boolean value) {
+
+    }
     @Override
     public void render(float v) {
 
@@ -46,5 +62,14 @@ public class Level2Screen extends BaseLevelScreen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean isPlayerDead() {
+        return getPlayerCurrentHealth() <= 0;
+    }
+
+    public float getPlayerCurrentHealth() {
+        return playerCurrentHealth;
     }
 }

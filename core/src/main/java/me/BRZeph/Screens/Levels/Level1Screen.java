@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,53 +13,61 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import me.BRZeph.Main;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import me.BRZeph.AI.GameData.Data.TowerData;
+import me.BRZeph.AI.GameData.Data.WaveData;
+import me.BRZeph.AI.GameData.Utils.GameDataExporter;
+import me.BRZeph.AI.GameData.GameEndHandler;
+import me.BRZeph.TowerDefenseGame;
 import me.BRZeph.core.Assets.AdvancedAssetsManager;
-import me.BRZeph.core.Managers.ScreenManager;
 import me.BRZeph.core.Assets.BasicAssetsManager;
+import me.BRZeph.core.Managers.CurrencyManager;
+import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.core.Managers.TowerManager;
+import me.BRZeph.core.Managers.WaveManager;
 import me.BRZeph.core.UI.ScrollableUI;
 import me.BRZeph.core.UI.StaticGridButtonUI;
 import me.BRZeph.entities.Map.Tile;
 import me.BRZeph.entities.Map.TileMap;
 import me.BRZeph.entities.Map.TileType;
-import me.BRZeph.entities.Towers.PlacedTower.Tower;
-import me.BRZeph.entities.monster.Monster;
 import me.BRZeph.entities.Player;
+import me.BRZeph.entities.Towers.PlacedTower.Tower;
 import me.BRZeph.entities.Towers.TowerItem;
-import me.BRZeph.core.Managers.TowerManager;
-import me.BRZeph.core.Managers.WaveManager;
-import me.BRZeph.core.Managers.CurrencyManager;
-import me.BRZeph.utils.Constants;
-import me.BRZeph.utils.GlobalUtils;
 import me.BRZeph.entities.Towers.TowerType;
-import me.BRZeph.utils.pathFinding.Node;
+import me.BRZeph.entities.WaveSystem.SpawnBehavior;
+import me.BRZeph.entities.WaveSystem.SpawnRuleEndWave;
+import me.BRZeph.entities.WaveSystem.Wave;
+import me.BRZeph.entities.monster.Monster;
+import me.BRZeph.entities.Map.Node;
+import me.BRZeph.entities.monster.MonsterType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.AssetsTiles.TILE_WIDTH;
+import static me.BRZeph.core.Managers.TowerManager.canBuyTower;
 import static me.BRZeph.utils.Constants.CameraValues.*;
+import static me.BRZeph.utils.Constants.LocalPaths.GAME_DATA_EXPORT_NAME;
 import static me.BRZeph.utils.Constants.Paths.MapsPath.LEVEL_1_MAP;
 import static me.BRZeph.utils.Constants.Paths.ScreensTexturesPath.LEVEL_1_BACKGROUND;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
 import static me.BRZeph.utils.Constants.Paths.UIPath.*;
+import static me.BRZeph.utils.Constants.Paths.Values.PlayerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.ButtonsValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.UIValues.SelectedTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.WaveValues.getLevel1Waves;
 import static me.BRZeph.utils.Constants.SCREEN_HEIGHT;
-import static me.BRZeph.utils.Constants.Values.PlayerValues.*;
-import static me.BRZeph.utils.Constants.Values.UIValues.ButtonsValues.*;
-import static me.BRZeph.utils.Constants.Values.UIValues.SelectedTowerValues.*;
-import static me.BRZeph.utils.Constants.Values.UIValues.TOWER_SHOP_HEIGHT;
-import static me.BRZeph.utils.Constants.Values.UIValues.TOWER_SHOP_WIDTH;
-import static me.BRZeph.utils.Constants.WaveValues.getLevel1Waves;
+import static me.BRZeph.utils.Constants.SCREEN_WIDTH;
+import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private SpriteBatch spriteBatch;
-    private Music music;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera orthographicCamera;
     private BitmapFont font;
 
-    private Texture towerMenuTexture;
     private Texture heartTexture;
     private Texture testButtonTexture;
     private Texture towerShopBackgroundTexture;
@@ -78,6 +86,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private boolean isPaused;
     private boolean debug;
+    private boolean AI;
     private float playerMaxHealth;
     private float playerCurrentHealth;
 
@@ -87,11 +96,12 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         orthographicCamera = new OrthographicCamera();
-        orthographicCamera.setToOrtho(false, Constants.SCREEN_WIDTH, SCREEN_HEIGHT);
+        orthographicCamera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
         font = new BitmapFont();
         staticButtonList = new ArrayList<>();
         scrollableUIList = new ArrayList<>();
         isPaused = false;
+        this.AI = false;
 
         loadAssets();
         initializeButtons();
@@ -104,9 +114,11 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         waveManager = new WaveManager(getLevel1Waves(tileMap.getPath()));
         towerManager = new TowerManager();
         currencyManager = new CurrencyManager();
-        currencyManager.addGold(300);
+        currencyManager.addGold(STARTING_GOLD);
+        currencyManager.addEssence(STARTING_ESSENCE);
+        currencyManager.addMomentum(STARTING_MOMENTUM);
 
-        playerMaxHealth = LEVEL_1_PLAYER_HEALTH;
+        playerMaxHealth = PLAYER_HEALTH;
         playerCurrentHealth = playerMaxHealth;
     }
 
@@ -117,7 +129,16 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     2- (DONE): make background UI for the "TOWER_MENU_UI" and implement it with a scrollable bar.
     2.1- (DONE): give up on the idea of scrollable ui, create an ui will different pages.
     3- finish towers system.
-    4- finish implementing new towers before handling the hero room thing.
+    3.1- implement new towers and tower divisions (neutral, military, magic etc).
+    3.2- implement leveling tree.
+    3.3- finish implementing new towers before handling the hero room thing.
+    4- finish implementing monster system.
+    4.1- finish all the 10 existing monsters specific mechanics.
+    4.2- consider making the monsters stronger as the time passes (or variations of the same monster wearing armor etc).
+    5- hero room.
+    6- After this, it will be just more of the same.
+
+    7- WHEN IMPLEMENTING UI USE THE STAGE CLASS.
 
     TO FIX:
     1- fix issue that is caused by a map not having a path.
@@ -130,12 +151,49 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     8- make upgraded towers different tiles? maybe (see TileType class).
     9- (DONE): fix issue with hero room tiles breaking the game when set to fire.
     10- fix issue with changing state of a rotated tile resetting the rotation of the tile. (is this even happening? idk).
+    11- fix issue of spawnRule only starting when the highest startTime is triggered.
 
     TO IMPROVE:
     1- (DONE): make the path finding algorithm more optimized, try version 3 of level 1 map (third map in the level_2_map.txt).
     2- (DONE): make a better currency system (Values.CurrencyTypes). Consider making individual classes for each.
     3- (DONE): make PlacedTower class abstract and every tower such as ARCHER_TOWER an implementation of PlacedTower.
     4- (DONE): improve wave system so that the wave can end at some point, consider adding a "finalBehavior" with a duration.
+    5- (DONE): remove "spawnRules" parameter of wave.class and use only behaviors/endBehavior.
+
+    AI UPGRADES:
+    1- Implement a getBetterTile method inside level1Environment.getPossibleActions() so that the AI prioritize the best tiles for each tower.
+    2- (DONE): Fix tileMap problem when placing a tower.
+    3- Implement TIME_MULTIPLIER constant.
+    4- (DONE): Fix environment.reset().
+    5- (DONE): Implement waveDataList in method performLevelEnd.
+    6- Consider using getBestTile() from Level1Environment.getPossibleActions().
+    7- (DONE): Implement an export from xml to excel.
+    7.1- (DONE): Modify TowerData to also have the parameters of damageDealt and killCount.
+    7.2- (DONE): Export to excel so that I can create an average value for towerType/Position/damage and then decide the best position for the tower.
+    8- Merge QTables after the training is done so that the data from the different AI's will interact with each other.
+    9- (DONE): Currently the AI action is taking immediate reward which should not be the case.
+    10- (DONE): Make the excel export dynamic to the fields of the xml, it should not be static.
+    11- Upgrade wave data and all actions data (early wave start).
+
+create 3 worksheets, 1 for the full data of the AI, another for the wave stats (rewards, how far it got to, etc) and another with the specifics stats of
+the wave (what im currently doing).
+
+same logic as EKPO/EKKO but with 3 WS.
+
+WS 1 -> see general values and stats of the AI full cycle (episodes -> max_expisodes).
+WS 2 -> see general values and stats of each wave (add a key column for the AI count here).
+WS 3 -> see specific values of each performed action (what im currently doing).
+
+create a key column that will identify which AI it's for all 3 worksheets.
+create a key column that will identify what wave it's for WS 2 and WS 3.
+
+put average fitness inside WS 2 and WS 1.
+
+put final AI reward inside WS 1.
+
+
+
+
 
     TO IMPLEMENT:
     1- implement basic game mechanics (towers, monsters, path and basic shop).
@@ -151,18 +209,20 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     11- (DONE): implement "incomingDamage" mechanic to monster class.
     11.1- (DONE): when a tower shoots a monster, the incomingDamage value increases.
     11.2- (DONE): when a tower is deciding who to shoot, it should skip monsters with incomingDamage > currentHealth.
-    12- **** PRIORITY **** PRIORITY **** PRIORITY **** PRIORITY **** implement new towers.
-    12.1- implement CannonTower (aoe damage).
-    12.2- implement LightningTower (chain damage).
-    12.2.1- finish update projectile method of lightningTower.
+    12- (DONE): **** PRIORITY **** PRIORITY **** PRIORITY **** PRIORITY **** implement new towers.
+    12.1- (DONE): implement CannonTower (aoe damage).
+    12.2- (DONE): implement LightningTower (chain damage).
+    12.2.1- (DONE): finish update projectile method of lightningTower.
     13- implement new enemies.
-    13.1- ?.
-    13.2- ?.
+    13.1- implement monsters abilities.
+    13.2- maybe(?) increase monsters stats as the waves progresses (+10% hp every wave etc).
     14- (DONE): implement closesMonsterStrategy that will aggro the closest monster to the tower.
     15- implement tab click switching the current tower aggro to the next aggro if the selected tower != null.
-    16- implement shift + tab click switching the current tower aggro to the previous aggro if the selected tower != null.
-    17- implement/fix towerAttackCooldownUI;
+    16- finish implementing AI.
+    17- (DONE): implement/fix towerAttackCooldownUI;
     18- implement sell tower button.
+    18.1- Implement hot key for tower buying.
+    18.2- Implement UI for tower price.
     19- hero room.
     19.1- tileMap should automatically detect and rotate the corners.
     19.2- define what constitutes the hero.
@@ -171,6 +231,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     19.5- create system to automatically pull the enemies.
     19.6- implement enemies having stats for combat with the hero.
     19.7- implement enemies AI.
+    20- tower upgrade tree.
 
     TO REFACTOR:
     1- refactor A LOT of code from this class into the correct managers.
@@ -179,6 +240,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     TO IMPLEMENT (TEXTURES):
     1- Texture for left aggro button, right aggro button, better tiles, better ui in general.
     2- Blood splatter when the archer tower his a monster.
+    3- explosion animation for cannon hit.
+    4- lightning animation for lightning tower.
      */
 
     @Override
@@ -187,7 +250,6 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         BasicAssetsManager.loadSpecificAssets(1, assetManager);
         AdvancedAssetsManager.loadAdvancedAssets(assetManager);
 
-        towerMenuTexture = assetManager.get(TOWER_MENU_UI);
         heartTexture = assetManager.get(HEART_UI);
         testButtonTexture = assetManager.get(TEST_BUTTON_TEXTURE_PATH, Texture.class);
         towerShopBackgroundTexture = assetManager.get(TOWER_SHOP_BACKGROUND_UI);
@@ -217,11 +279,10 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         renderTileMap(); //this also render the towers, there is no need to call "tower.render()" or whatever.
         renderWave(delta);
         renderTowerProjectiles();
+        renderTowerAttackCooldown();
         renderPath();
         renderUI();
         renderPlayer(delta);
-
-        renderTowerAttackCooldown();
     }
 
     private void renderUI() {
@@ -257,8 +318,8 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         if (towerManager.getSelectedTower() != null){
             towerLeftAggroButton.setDisable(false);
             towerRightAggroButton.setDisable(false);
-            int tileX = towerManager.getSelectedTower().getxPos(); // For whatever reason this doesnt work if i dont invert
-            int tileY = towerManager.getSelectedTower().getyPos(); // the X and Y coordinates.
+            int tileX = towerManager.getSelectedTower().getxPos();
+            int tileY = towerManager.getSelectedTower().getyPos();
             int radius = (int) towerManager.getSelectedTower().getType().getRange(); // deleted this later.
             int centerX = tileX*tileMap.getTileWidth();
             int centerY = tileY*tileMap.getTileHeight();
@@ -348,13 +409,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             TOWER_AGGRO_LEFT_BUTTON_WIDTH, TOWER_AGGRO_LEFT_BUTTON_HEIGHT,
             testButtonTexture,
             () -> {
-                for (Tower tower : towerManager.getTowers()){
-                    if (tower.getxPos() == towerManager.getSelectedTower().getxPos() &&
-                    tower.getyPos() == towerManager.getSelectedTower().getyPos()){
-                        tower.setPreviousTargetingStrategy();
-                        break;
-                    }
-                }
+                towerManager.getSelectedTower().setPreviousTargetingStrategy();
             },
             () -> {
             }
@@ -390,16 +445,15 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
     private void initializeTowerShopUI() {
         int width = TOWER_SHOP_WIDTH;
-        int height = TOWER_SHOP_HEIGHT;
-        int startX = Constants.SCREEN_WIDTH - width;
-        int startY = SCREEN_HEIGHT - height;
+        int startX = SCREEN_WIDTH - width;
+        int startY = SCREEN_HEIGHT - TOWER_SHOP_HEIGHT;
 
         List<StaticGridButtonUI> buttons = getTowerShopButtonList();
 
         scrollableUIList.add(new ScrollableUI(
             startX, startY, startX + width, SCREEN_HEIGHT,
-            Constants.Values.UIValues.TOWER_SHOP_GRIDX, Constants.Values.UIValues.TOWER_SHOP_GRIDY,
-            Constants.Values.UIValues.TOWER_SHOP_ITEM_LENGTH,
+            TOWER_SHOP_GRIDX, TOWER_SHOP_GRIDY,
+            TOWER_SHOP_ITEM_LENGTH,
             towerShopBackgroundTexture, towerShopfrontTexture, buttons
         ));
     }
@@ -419,7 +473,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
             StaticGridButtonUI button = new StaticGridButtonUI(testButtonTexture);
             button.setOnClick(() -> {
-                GlobalUtils.consoleLog("Clicked on button " + (n + 1));
+                consoleLog("Clicked on button " + (n + 1));
             });
             button.setOnHover(() -> {
                 button.renderButtonInformationOnHover(spriteBatch, font, "Não implementado ainda");
@@ -433,7 +487,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private StaticGridButtonUI createBuyLightningButton() {
         StaticGridButtonUI buyLightning = new StaticGridButtonUI(TowerType.LIGHTNING.getItemTexture());
         buyLightning.setOnClick(() -> {
-            if(towerManager.canBuyTower(currencyManager, new TowerItem(TowerType.LIGHTNING))){
+            if(canBuyTower(currencyManager, new TowerItem(TowerType.LIGHTNING))){
                 player.setHoldingItem(new TowerItem(TowerType.LIGHTNING));
                 player.setTileType(TileType.LIGHTNING_TOWER);
             }
@@ -447,7 +501,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private StaticGridButtonUI createBuyCannonButton() {
         StaticGridButtonUI buyCannon = new StaticGridButtonUI(TowerType.CANNON.getItemTexture());
         buyCannon.setOnClick(() -> {
-            if(towerManager.canBuyTower(currencyManager, new TowerItem(TowerType.CANNON))){
+            if(canBuyTower(currencyManager, new TowerItem(TowerType.CANNON))){
                 player.setHoldingItem(new TowerItem(TowerType.CANNON));
                 player.setTileType(TileType.CANNON_TOWER);
             }
@@ -461,7 +515,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private StaticGridButtonUI createBuyArcherButton() {
         StaticGridButtonUI buyArcher = new StaticGridButtonUI(TowerType.ARCHER.getItemTexture());
         buyArcher.setOnClick(() -> {
-            if(towerManager.canBuyTower(currencyManager, new TowerItem(TowerType.ARCHER))){
+            if(canBuyTower(currencyManager, new TowerItem(TowerType.ARCHER))){
                 player.setHoldingItem(new TowerItem(TowerType.ARCHER));
                 player.setTileType(TileType.ARCHER_TOWER);
             }
@@ -555,14 +609,14 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             player.setHoldingItem(null);
             return;
         }
-        if (!towerManager.canBuyTower(currencyManager, player.getHoldingItem())) {
+        if (!canBuyTower(currencyManager, player.getHoldingItem())) {
             player.setHoldingItem(null);
             return;
         }
 
         towerManager.placeTower(
             tileMap, player.getHoldingItemTileType(), player.getHoldingItem().getType(),
-            tileX, tileY
+            tileX, tileY, waveManager.getCurrentWaveIndex()
         );
         towerManager.buyItem(currencyManager, player.getHoldingItem());
 
@@ -628,8 +682,9 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     private void updateWave(float delta) { // this fucking method should be in WaveManager class.
         waveManager.update(delta);
 
-        List<Monster> reachedEnd = waveManager.getCurrentWave().getMonsterReachedEnd();
         List<Monster> monstersAlive = waveManager.getCurrentWave().getMonsterList();
+
+        List<Monster> reachedEnd = waveManager.getCurrentWave().getMonsterReachedEnd();
         for (Monster monster : reachedEnd) {
             playerCurrentHealth -= monster.getType().getNexusDmg();
             monstersAlive.remove(monster);
@@ -637,11 +692,28 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         reachedEnd.clear();
         List<Monster> died = waveManager.getCurrentWave().getMonsterDied();
         for (Monster monster : died) {
-            monstersAlive.remove(monster);
             currencyManager.addMonsterLoot(monster.getType());
+            monstersAlive.remove(monster);
             // IMPLEMENT MONSTER DEATH HERE.
         }
         died.clear();
+        if (waveManager.isFinishedLevel() || isPlayerDead()){
+            performLevelEnd();
+        }
+    }
+
+    private void performLevelEnd() {
+        GameEndHandler gameEndHandler = new GameEndHandler(towerManager.getTowers(), waveManager.getWaves());
+        List<TowerData> towerDataList = gameEndHandler.collectTowerData();
+        List<WaveData> waveDataList = gameEndHandler.collectWaveData();
+
+        GameDataExporter exporter = new GameDataExporter();
+        exporter.exportGameData(towerDataList, waveDataList, GAME_DATA_EXPORT_NAME);
+
+        if (!AI){ // Prevent creating a new file every frame.
+            consoleLog("NOT AI ***************************************************************");
+            TowerDefenseGame.getScreenManager().showMainMenu();
+        }
     }
 
     private void renderTileMap(){
@@ -686,14 +758,13 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
                     spriteBatch.end();
                 }
             } else {
-                GlobalUtils.consoleLog("path null");
+                consoleLog("path null");
             }
         }
     }
 
     private void renderCurrencyUI() {
-        int width = Constants.Values.UIValues.CURRENCY_X_POS_DECREASE;
-        int startX = Constants.SCREEN_WIDTH - width - TOWER_SHOP_WIDTH;
+        int startX = SCREEN_WIDTH - CURRENCY_X_POS_DECREASE - TOWER_SHOP_WIDTH;
         int startY = 100;
         String message = "Gold -> " + currencyManager.getGold() + "\n" +
                          "Essence -> " + currencyManager.getEssence() + "\n" +
@@ -737,14 +808,13 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     }
 
     private void renderCurrentWaveUI() {
-        int width = Constants.Values.UIValues.CURRENT_WAVE_WIDTH;
-        int startX = Constants.SCREEN_WIDTH - width - TOWER_SHOP_WIDTH;
-        int startY = SCREEN_HEIGHT - Constants.Values.UIValues.CURRENT_WAVE_HEIGHT_DECREASE;
+        int startX = SCREEN_WIDTH - CURRENT_WAVE_WIDTH - TOWER_SHOP_WIDTH;
+        int startY = SCREEN_HEIGHT - CURRENT_WAVE_HEIGHT_DECREASE;
         float waveClock = waveManager.getCurrentWave().getWaveClock();
         int minutes = (int)(waveClock/60);
         int seconds = (int)(waveClock - minutes*60);
 
-        String message = "Wave: " + (waveManager.getCurrentWaveIndex() + 1) + "/" + Constants.WaveValues.LEVEL_1_MAX_WAVE;
+        String message = "Wave: " + (waveManager.getCurrentWaveIndex() + 1) + "/" + waveManager.getWaves().size();
 
         float originalScaleX = font.getData().scaleX;
         float originalScaleY = font.getData().scaleY;
@@ -754,16 +824,15 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         spriteBatch.setColor(Color.WHITE);
         font.draw(spriteBatch, message, startX, startY);
         message = "Timer: " + minutes + ":" + seconds;
-        font.draw(spriteBatch, message, startX, startY - Constants.Values.UIValues.CURRENT_WAVE_CLOCK_HEIGHT_DECREASE);
+        font.draw(spriteBatch, message, startX, startY - CURRENT_WAVE_CLOCK_HEIGHT_DECREASE);
         spriteBatch.end();
 
         font.getData().setScale(originalScaleX, originalScaleY);
     }
 
     private void renderFPSUI() {
-        float startX = Constants.Values.UIValues.FPS_X_POS;
-        float startY = SCREEN_HEIGHT - Constants.Values.UIValues.FPS_Y_POS_DECREASE;
-        float desiredWidth = Constants.Values.UIValues.FPS_WIDTH;
+        float startY = SCREEN_HEIGHT - FPS_Y_POS_DECREASE;
+        float desiredWidth = FPS_WIDTH;
         float fps = Gdx.graphics.getFramesPerSecond();
         String message = "FPS: " + (int) fps;
 
@@ -771,14 +840,14 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
 
         spriteBatch.begin();
         spriteBatch.setColor(Color.WHITE);
-        font.draw(spriteBatch, message, startX, startY);
+        font.draw(spriteBatch, message, (float) FPS_X_POS, startY);
         spriteBatch.end();
     }
 
     private void renderPlayerHealthUI() {
-        float startX = Constants.Values.UIValues.HEALTH_X_POS;
-        float startY = SCREEN_HEIGHT - Constants.Values.UIValues.HEALTH_Y_POS_DECREASE;
-        float desiredWidth = Constants.Values.UIValues.HEALTH_WIDTH;
+        float startX = HEALTH_X_POS;
+        float startY = SCREEN_HEIGHT - HEALTH_Y_POS_DECREASE;
+        float desiredWidth = HEALTH_WIDTH;
 
         spriteBatch.begin();
         spriteBatch.setColor(Color.WHITE);
@@ -786,16 +855,16 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             heartTexture,
             startX,
             startY,
-            Constants.Values.UIValues.HEART_WIDTH,
-            Constants.Values.UIValues.HEART_HEIGHT
+            HEART_WIDTH,
+            HEART_HEIGHT
         );
         spriteBatch.draw(
             heartTexture,
-            startX + Constants.Values.UIValues.HEART_WIDTH + 2*Constants.Values.UIValues.HEALTH_HEART_GAP +
+            startX + HEART_WIDTH + 2*HEALTH_HEART_GAP +
                 145,
             startY,
-            Constants.Values.UIValues.HEART_WIDTH,
-            Constants.Values.UIValues.HEART_HEIGHT
+            HEART_WIDTH,
+            HEART_HEIGHT
         );
         spriteBatch.end();
 
@@ -805,12 +874,12 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
         float originalScaleX = font.getData().scaleX;
         float originalScaleY = font.getData().scaleY;
         spriteBatch.begin();
-        font.getData().setScale(Constants.Values.UIValues.HEALTH_FONT_SIZE);
+        font.getData().setScale(HEALTH_FONT_SIZE);
         font.draw(
             spriteBatch,
             message,
-            startX + Constants.Values.UIValues.HEART_WIDTH + Constants.Values.UIValues.HEALTH_HEART_GAP,
-            startY + (float) Constants.Values.UIValues.HEART_HEIGHT /2 + font.getData().xHeight/2
+            startX + HEART_WIDTH + HEALTH_HEART_GAP,
+            startY + (float) HEART_HEIGHT /2 + font.getData().xHeight/2
         );
         spriteBatch.end();
         font.getData().setScale(originalScaleX, originalScaleY);
@@ -821,16 +890,24 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     }
 
     @Override
+    public boolean isPlayerDead() {
+        return getPlayerCurrentHealth() <= 0;
+    }
+
+    public float getPlayerCurrentHealth() {
+        return playerCurrentHealth;
+    }
+
+    @Override
     public void resize(int width, int height) {
         orthographicCamera.setToOrtho(false, width, height);
     }
 
     @Override
     public void dispose() {
-        GlobalUtils.consoleLog("Calling dispose method of Level1Screen");
+        consoleLog("Calling dispose method of Level1Screen");
         assetManager.unload(LEVEL_1_BACKGROUND);
     }
-
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
@@ -853,7 +930,7 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
             debug = !debug;
         }
         if(keycode == Input.Keys.F7) {
-            Main.getScreenManager().showMainMenu();
+            TowerDefenseGame.getScreenManager().showMainMenu();
         }
         if(keycode == Input.Keys.F8){
             for (Monster monster : waveManager.getCurrentWave().getMonsterList()){
@@ -926,5 +1003,38 @@ public class Level1Screen extends BaseLevelScreen implements InputProcessor {
     @Override
     public boolean mouseMoved(int i, int i1) {
         return false;
+    }
+
+    public WaveManager getWaveManager() {
+        return waveManager;
+    }
+
+    public TowerManager getTowerManager() {
+        return towerManager;
+    }
+
+    public CurrencyManager getCurrencyManager() {
+        return currencyManager;
+    }
+
+    public float getPlayerMaxHealth() {
+        return playerMaxHealth;
+    }
+
+    public TileMap getTileMap() {
+        return tileMap;
+    }
+
+    @Override
+    public OrthographicCamera getCamera() {
+        return orthographicCamera;
+    }
+
+    public boolean isAI() {
+        return AI;
+    }
+
+    public void setAI(boolean AI) {
+        this.AI = AI;
     }
 }

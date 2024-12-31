@@ -1,39 +1,44 @@
 package me.BRZeph.entities.Towers;
 
 import com.badlogic.gdx.graphics.Texture;
-import me.BRZeph.Main;
+import me.BRZeph.TowerDefenseGame;
 
 import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
-import static me.BRZeph.utils.Constants.Values.TowerValues.ArcherTowerValues.*;
-import static me.BRZeph.utils.Constants.Values.TowerValues.CannonTowerValues.*;
-import static me.BRZeph.utils.Constants.Values.TowerValues.CannonTowerValues.CANNON_TOWER_AOE_DAMAGE;
-import static me.BRZeph.utils.Constants.Values.TowerValues.LightningTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.ArcherTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.CannonTowerValues.*;
+import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.LightningTowerValues.*;
 
 public enum TowerType {
     ARCHER(
         ARCHER_TOWER_PRICE_GOLD, ARCHER_TOWER_PRICE_ESSENCE, ARCHER_TOWER_PRICE_MOMENTUM,
         ARCHER_TOWER_DAMAGE, ARCHER_TOWER_RANGE, ARCHER_TOWER_ATTACK_COOLDOWN,
         ARCHER_TOWER_IS_AOE, ARCHER_TOWER_AOE_RANGE, ARCHER_TOWER_AOE_DAMAGE,
-        Main.getAssetManager().get(ARCHER_TOWER_PLACED),
-        Main.getAssetManager().get(ARCHER_TOWER_ITEM),
-        Main.getAssetManager().get(ARCHER_TOWER_PROJECTILE)
+        TowerDefenseGame.getAssetManager().get(ARCHER_TOWER_PLACED),
+        TowerDefenseGame.getAssetManager().get(ARCHER_TOWER_ITEM),
+        TowerDefenseGame.getAssetManager().get(ARCHER_TOWER_PROJECTILE)
     ),
     CANNON(
         CANNON_TOWER_PRICE_GOLD, CANNON_TOWER_PRICE_ESSENCE, CANNON_TOWER_PRICE_MOMENTUM,
         CANNON_TOWER_DAMAGE, CANNON_TOWER_RANGE, CANNON_TOWER_ATTACK_COOLDOWN,
         CANNON_TOWER_IS_AOE, CANNON_TOWER_AOE_RANGE, CANNON_TOWER_AOE_DAMAGE,
-        Main.getAssetManager().get(CANNON_TOWER_PLACED),
-        Main.getAssetManager().get(CANNON_TOWER_ITEM),
-        Main.getAssetManager().get(CANNON_TOWER_PROJECTILE)
+        TowerDefenseGame.getAssetManager().get(CANNON_TOWER_PLACED),
+        TowerDefenseGame.getAssetManager().get(CANNON_TOWER_ITEM),
+        TowerDefenseGame.getAssetManager().get(CANNON_TOWER_PROJECTILE)
     ),
     LIGHTNING(
         LIGHTNING_TOWER_PRICE_GOLD, LIGHTNING_TOWER_PRICE_ESSENCE, LIGHTNING_TOWER_PRICE_MOMENTUM,
         LIGHTNING_TOWER_DAMAGE, LIGHTNING_TOWER_RANGE, LIGHTNING_TOWER_ATTACK_COOLDOWN,
         LIGHTNING_TOWER_IS_AOE, LIGHTNING_TOWER_AOE_RANGE, LIGHTNING_TOWER_AOE_DAMAGE,
-        Main.getAssetManager().get(LIGHTNING_TOWER_PLACED),
-        Main.getAssetManager().get(LIGHTNING_TOWER_ITEM),
-        Main.getAssetManager().get(LIGHTNING_TOWER_PROJECTILE)
+        TowerDefenseGame.getAssetManager().get(LIGHTNING_TOWER_PLACED),
+        TowerDefenseGame.getAssetManager().get(LIGHTNING_TOWER_ITEM),
+        TowerDefenseGame.getAssetManager().get(LIGHTNING_TOWER_PROJECTILE)
     );
+
+    /*
+    When creating a new tower, put the prices inside the currencyManager.class class too.
+     */
+
+
 
     private final float goldCost, essenceCost, momentumCost, damage, range, attackCooldown, aoeRange, aoeDamage;
     private final boolean aoe;
@@ -89,6 +94,10 @@ public enum TowerType {
             default:
                 return "Unknown TowerType";
         }
+    }
+
+    public String getTowerTypeName() {
+        return this.toString().split(" ")[0];
     }
 
     public float getGoldCost() {
