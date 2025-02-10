@@ -5,18 +5,41 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import me.BRZeph.utils.GlobalUtils;
 
 import java.util.HashMap;
 
-import static me.BRZeph.utils.Constants.Paths.Animations.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Animations.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.UIPath.UI_ATLAS;
+import static me.BRZeph.utils.Constants.Constants.Paths.UIPath.UI_ATLAS_REGION_LENGTH;
+import static me.BRZeph.utils.Constants.Constants.PlaceHolderValues.PLACE_HOLDER_TEXTURE_PATH;
+import static me.BRZeph.utils.Constants.TowerUpgradeConstants.ArcherTowerUpgrades.*;
+import static me.BRZeph.utils.Constants.TowerUpgradeConstants.CannonTowerUpgrades.*;
+import static me.BRZeph.utils.Constants.TowerUpgradeConstants.LightningTowerUpgrades.*;
+import static me.BRZeph.utils.Constants.TowerUpgradeConstants.TOWER_UPGRADE_ATLAS;
 
 public class AdvancedAssetsManager {
 
     private static final HashMap<String, Animation<TextureRegion>> animations = new HashMap<>();
+    private static final HashMap<String, TextureRegion> UITextures = new HashMap<>();
 
     public static void loadAdvancedAssets(AssetManager assetManager) {
-        loadAnimations(assetManager);
+        loadAtlases(assetManager);
+
+        processAnimationsAtlases(assetManager); // Process all animations here.
+        ProcessUIAtlases(assetManager); // Process all static textures that are inside atlases here.
+    }
+
+    private static void loadAtlases(AssetManager assetManager) {
+        assetManager.load(PLAYER_WALK_ANIMATION_ATLAS, Texture.class);
+        assetManager.load(MONSTER_WALK_ANIMATION_ATLAS, Texture.class);
+        assetManager.load(UI_ATLAS, Texture.class);
+        assetManager.load(TOWER_UPGRADE_ATLAS, Texture.class);
+        assetManager.finishLoading(); // Load all atlases here
+    }
+
+    private static void processAnimationsAtlases(AssetManager assetManager) {
+        loadPlayerWalkAnimation(assetManager);
+        loadMonstersWalkAnimation(assetManager);
     }
 
 /*
@@ -29,26 +52,9 @@ Position of the regions inside the TextureRegion.split():
 [15][0]  [15][1]  [15][2]  [15][3]  ... [15][15]
  */
 
-    private static void loadAnimations(AssetManager assetManager) { // Load all atlases before registering the frames.
-        assetManager.load(PLAYER_WALK_ANIMATION, Texture.class);
-        assetManager.load(MONSTER_WALK_ANIMATION, Texture.class);
-        /*
-        load all other atlases here.
-         */
-
-        assetManager.finishLoading();
-
-        loadPlayerWalkAnimation(assetManager);
-        loadMonstersWalkAnimation(assetManager);
-        /*
-        load all other animations here (remember to unload atlas).
-         */
-
-    }
-
     private static void loadMonstersWalkAnimation(AssetManager assetManager) {
 
-        Texture MonsterWalkAtlas = assetManager.get(MONSTER_WALK_ANIMATION, Texture.class);
+        Texture MonsterWalkAtlas = assetManager.get(MONSTER_WALK_ANIMATION_ATLAS, Texture.class);
         TextureRegion[][] regions = TextureRegion.split(MonsterWalkAtlas, 64, 64);
 
         LoadZombieWalkAnimation(regions);
@@ -62,6 +68,7 @@ Position of the regions inside the TextureRegion.split():
         loadInfernalJuggernautWalkAnimation(regions);
         loadTemporalShadeWalkAnimation(regions);
         loadAbyssalMatronWalkAnimation(regions);
+        loadLesserAbyssalMatronWalkAnimation(regions);
     }
 
     private static void LoadSkeletonWalkAnimation(TextureRegion[][] regions) {
@@ -184,6 +191,18 @@ Position of the regions inside the TextureRegion.split():
         animations.put(TEMPORAL_SHADE_WALK_ANIMATION_NAME, walkAnimation);
     }
 
+    private static void loadLesserAbyssalMatronWalkAnimation(TextureRegion[][] regions) {
+        Array<TextureRegion> walkFrames = new Array<>();
+        walkFrames.addAll(
+            regions[10][0] // Frame 1
+        );
+        Animation<TextureRegion> walkAnimation = new Animation<>(
+            LESSER_ABYSSAL_MATRON_WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP
+        );
+        animations.put(LESSER_ABYSSAL_MATRON_WALK_ANIMATION_NAME, walkAnimation);
+
+    }
+
     private static void loadAbyssalMatronWalkAnimation(TextureRegion[][] regions) {
         Array<TextureRegion> walkFrames = new Array<>();
         walkFrames.addAll(
@@ -196,7 +215,7 @@ Position of the regions inside the TextureRegion.split():
     }
 
     private static void loadPlayerWalkAnimation(AssetManager assetManager) {
-        Texture atlasTexture = assetManager.get(PLAYER_WALK_ANIMATION, Texture.class);
+        Texture atlasTexture = assetManager.get(PLAYER_WALK_ANIMATION_ATLAS, Texture.class);
 
         TextureRegion[][] regions = TextureRegion.split(atlasTexture, 64, 64);
 
@@ -225,7 +244,98 @@ Position of the regions inside the TextureRegion.split():
         animations.put(PLAYER_WALK_ANIMATION_NAME, walkAnimation);
     }
 
+    private static void ProcessUIAtlases(AssetManager assetManager) {
+        ProcessButtonsTextures(assetManager);
+        ProcessTowerUpgradesTextures(assetManager);
+    }
+
+    private static void ProcessTowerUpgradesTextures(AssetManager assetManager) {
+        Texture atlasTexture = assetManager.get(TOWER_UPGRADE_ATLAS, Texture.class);
+
+        TextureRegion[][] regions = TextureRegion.split(atlasTexture, 64, 64);
+        /*
+        [tower]_[path]_[tier]_[texture]
+        at_p1_t1_bt:
+            -> archer tower
+            -> path 1
+            -> tier 1
+            -> buy texture.
+         */
+        UITextures.put(AT_P1_T1_BUY_TEXTURE_NAME, regions[0][0]);  // Archer upgrades buy textures.
+        UITextures.put(AT_P1_T2_BUY_TEXTURE_NAME, regions[0][1]);  // Archer upgrades buy textures.
+        UITextures.put(AT_P1_T3_BUY_TEXTURE_NAME, regions[0][2]);  // Archer upgrades buy textures.
+        UITextures.put(AT_P1_T4_BUY_TEXTURE_NAME, regions[0][3]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P2_T1_BUY_TEXTURE_NAME, regions[0][4]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P2_T2_BUY_TEXTURE_NAME, regions[0][5]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P2_T3_BUY_TEXTURE_NAME, regions[0][6]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P2_T4_BUY_TEXTURE_NAME, regions[0][7]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P3_T1_BUY_TEXTURE_NAME, regions[0][8]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P3_T2_BUY_TEXTURE_NAME, regions[0][9]);  // Archer upgrades buy textures.
+//        UITextures.put(AT_P3_T3_BUY_TEXTURE_NAME, regions[0][10]); // Archer upgrades buy textures.
+//        UITextures.put(AT_P3_T4_BUY_TEXTURE_NAME, regions[0][11]); // Archer upgrades buy textures.
+
+        TextureRegion placeHolder = new TextureRegion(assetManager.get(PLACE_HOLDER_TEXTURE_PATH, Texture.class));
+
+        UITextures.put(AT_P2_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P2_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P2_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P2_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P3_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P3_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P3_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+        UITextures.put(AT_P3_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures.
+
+        UITextures.put(CT_P1_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][0]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P1_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][1]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P1_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][2]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P1_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][3]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P2_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][4]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P2_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][5]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P2_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][6]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P2_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][7]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P3_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][8]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P3_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][9]);  // Cannon upgrades buy textures.
+        UITextures.put(CT_P3_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][10]); // Cannon upgrades buy textures.
+        UITextures.put(CT_P3_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[1][11]); // Cannon upgrades buy textures.
+
+        UITextures.put(LT_P1_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][0]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P1_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][1]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P1_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][2]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P1_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][3]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P2_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][4]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P2_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][5]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P2_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][6]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P2_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][7]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P3_T1_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][8]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P3_T2_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][9]);  // Lightning upgrades buy textures.
+        UITextures.put(LT_P3_T3_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][10]); // Lightning upgrades buy textures.
+        UITextures.put(LT_P3_T4_BUY_TEXTURE_NAME, placeHolder); // Using placeHolder while I don't create new textures. regions[2][11]); // Lightning upgrades buy textures.
+    }
+
+    private static void ProcessButtonsTextures(AssetManager assetManager) {
+        Texture atlasTexture = assetManager.get(UI_ATLAS, Texture.class);
+
+        TextureRegion[][] regions = TextureRegion.split(atlasTexture, UI_ATLAS_REGION_LENGTH, UI_ATLAS_REGION_LENGTH);
+
+        UITextures.put("btn_speech_bubble_TLC", regions[0][0]);
+        UITextures.put("btn_speech_bubble_TRC", regions[0][1]);
+        UITextures.put("btn_speech_bubble_UB",  regions[0][2]);
+        UITextures.put("btn_speech_bubble_RB",  regions[0][3]);
+        UITextures.put("btn_speech_bubble_M",   regions[0][4]);
+
+        UITextures.put("btn_speech_bubble_BLC", regions[1][0]);
+        UITextures.put("btn_speech_bubble_BRC", regions[1][1]);
+        UITextures.put("btn_speech_bubble_DB",  regions[1][2]);
+        UITextures.put("btn_speech_bubble_LB",  regions[1][3]);
+    }
+
     public static Animation<TextureRegion> getAnimation(String animationName) {
+        if (!animations.containsKey(animationName)) throw new IllegalArgumentException("Unregistered animation texture");
         return animations.get(animationName);
+    }
+
+    public static TextureRegion getUITexture(String UIName){
+        if (!UITextures.containsKey(UIName)) return null; //throw new IllegalArgumentException("Unregistered UI texture");
+        return UITextures.get(UIName);
     }
 }

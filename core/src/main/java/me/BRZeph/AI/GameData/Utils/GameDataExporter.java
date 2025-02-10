@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static me.BRZeph.utils.Constants.AIValues.*;
-import static me.BRZeph.utils.Constants.LocalPaths.GAME_DATA_EXPORT_PATH;
+import static me.BRZeph.utils.Constants.Constants.AIValues.*;
+import static me.BRZeph.utils.Constants.Constants.LocalPaths.GAME_DATA_EXPORT_PATH;
 
 public class GameDataExporter {
 
@@ -142,6 +142,10 @@ public class GameDataExporter {
     }
 
     private void exportWaveData(List<WaveData> waveDataList, Document document, Element rootElement) {
+        float gameGold = 0;
+        float gameEssence = 0;
+        float gameMomentum = 0;
+
         Element wavesElement = document.createElement("Waves");
         rootElement.appendChild(wavesElement);
 
@@ -174,6 +178,9 @@ public class GameDataExporter {
                     appendNodeChild(document, "gold", String.valueOf(rewardData.getGold()), rewardElement);
                     appendNodeChild(document, "essence", String.valueOf(rewardData.getEssence()), rewardElement);
                     appendNodeChild(document, "momentum", String.valueOf(rewardData.getMomentum()), rewardElement);
+                    gameGold += rewardData.getGold();
+                    gameEssence += rewardData.getEssence();
+                    gameMomentum += rewardData.getMomentum();
                 }
             }
             WaveData.RewardData totalRewards = waveData.getTotalRewards();
@@ -184,6 +191,13 @@ public class GameDataExporter {
             appendNodeChild(document, "essence", String.valueOf(totalRewards.getEssence()), totalRewardsElement);
             appendNodeChild(document, "momentum", String.valueOf(totalRewards.getMomentum()), totalRewardsElement);
         }
+
+        Element gameCurrency = document.createElement("GameCurrency");
+        wavesElement.appendChild(gameCurrency);
+
+        appendNodeChild(document, "gold", String.valueOf(gameGold), gameCurrency);
+        appendNodeChild(document, "essence", String.valueOf(gameEssence), gameCurrency);
+        appendNodeChild(document, "momentum", String.valueOf(gameMomentum), gameCurrency);
     }
 
     private File getFile(String fileName) {

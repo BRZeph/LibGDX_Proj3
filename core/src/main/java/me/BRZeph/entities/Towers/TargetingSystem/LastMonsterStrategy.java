@@ -15,6 +15,6 @@ public class LastMonsterStrategy implements TargetingStrategy {
     }
     @Override
     public String toString() {
-        return "Targetting system -> LastMonsterStrategy";
+        return "Last";
     }
 }

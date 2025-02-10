@@ -6,8 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.BRZeph.core.Managers.ScreenManager;
-import me.BRZeph.utils.Constants;
+import me.BRZeph.Screens.ScreenManager;
+import me.BRZeph.utils.Constants.Constants;
 import me.BRZeph.utils.GlobalUtils;
 
 public class LevelSelectorScreen implements Screen, InputProcessor {

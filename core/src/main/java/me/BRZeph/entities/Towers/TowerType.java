@@ -3,10 +3,10 @@ package me.BRZeph.entities.Towers;
 import com.badlogic.gdx.graphics.Texture;
 import me.BRZeph.TowerDefenseGame;
 
-import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
-import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.ArcherTowerValues.*;
-import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.CannonTowerValues.*;
-import static me.BRZeph.utils.Constants.Paths.Values.TowerValues.LightningTowerValues.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.TowersTexturesPath.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Values.TowerValues.ArcherTowerValues.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Values.TowerValues.CannonTowerValues.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Values.TowerValues.LightningTowerValues.*;
 
 public enum TowerType {
     ARCHER(

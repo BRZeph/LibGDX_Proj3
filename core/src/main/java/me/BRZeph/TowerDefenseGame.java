@@ -3,27 +3,31 @@ package me.BRZeph;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
-import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.Screens.ScreenManager;
 
-import static me.BRZeph.utils.GlobalUtils.consoleLog;
+import java.awt.*;
+
+import static me.BRZeph.core.Assets.FontManager.disposeFonts;
+import static me.BRZeph.core.Assets.FontManager.loadFonts;
 
 /** {@link com.badlogic.gdx.ApplicationListener}*/
 public class TowerDefenseGame extends Game {
     private static AssetManager assetManager;
     private static ScreenManager screenManager;
-
     private static ShapeRenderer shapeRenderer;
 
     private static float runTime = 0;
 
     @Override
     public void create() {
-        shapeRenderer = new ShapeRenderer();
-
         assetManager = new AssetManager();
         screenManager = new ScreenManager(this, assetManager);
+        loadFonts();
+        shapeRenderer = new ShapeRenderer();
         screenManager.showMainMenu();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -45,13 +49,14 @@ public class TowerDefenseGame extends Game {
         super.dispose();
         screenManager.dispose();
         shapeRenderer.dispose();
+        disposeFonts();
     }
+
     public static void listLoadedAssets(AssetManager assetManager) {
         System.out.println("\n");
         Array<String> assetNames = assetManager.getAssetNames();
 
         for (String assetName : assetNames) {
-            // Get the type of asset using its class
             Class<?> assetType = assetManager.getAssetType(assetName);
 
             System.out.println("Asset Name: " + assetName + ", Type: " + assetType.getSimpleName());

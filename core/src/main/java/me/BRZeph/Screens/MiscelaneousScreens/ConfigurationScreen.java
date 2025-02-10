@@ -2,7 +2,7 @@ package me.BRZeph.Screens.MiscelaneousScreens;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.Screens.ScreenManager;
 
 public class ConfigurationScreen implements Screen {
     private final ScreenManager screenManager;

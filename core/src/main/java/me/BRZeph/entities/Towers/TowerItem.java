@@ -1,6 +1,6 @@
 package me.BRZeph.entities.Towers;
 
-import me.BRZeph.core.Managers.CurrencyManager;
+import me.BRZeph.core.CurrencyManager;
 
 public class TowerItem {
     private TowerType type;

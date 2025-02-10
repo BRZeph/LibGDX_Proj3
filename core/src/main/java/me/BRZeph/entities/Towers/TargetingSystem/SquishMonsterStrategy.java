@@ -15,6 +15,6 @@ public class SquishMonsterStrategy implements TargetingStrategy {
     }
     @Override
     public String toString() {
-        return "Targetting system -> SquishiestMonsterStrategy";
+        return "Squish";
     }
 }

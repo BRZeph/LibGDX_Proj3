@@ -6,8 +6,8 @@ import me.BRZeph.entities.monster.Monster;
 import java.util.Comparator;
 import java.util.List;
 
-import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Constants.Paths.TileValues.TILE_WIDTH;
 
 public class ClosestMonsterStrategy implements TargetingStrategy {
     private int towerXPos;
@@ -23,7 +23,7 @@ public class ClosestMonsterStrategy implements TargetingStrategy {
 
     @Override
     public String toString() {
-        return "Targetting system -> closestMonsterStrategy";
+        return "Closest";
     }
 
     private void setTowerXPos(int towerXPos) {

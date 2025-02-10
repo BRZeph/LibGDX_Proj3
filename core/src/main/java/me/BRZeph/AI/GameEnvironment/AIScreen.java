@@ -2,24 +2,24 @@ package me.BRZeph.AI.GameEnvironment;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import me.BRZeph.AI.Actions.ActionLogger;
 import me.BRZeph.AI.Actions.PlaceTower;
 import me.BRZeph.AI.Actions.SellTower;
 import me.BRZeph.AI.Actions.StartWave;
+import me.BRZeph.AI.Core.Action;
 import me.BRZeph.AI.Core.QLearningTrainer;
 import me.BRZeph.AI.GameData.Utils.GameDataExporter;
-import me.BRZeph.AI.Actions.ActionLogger;
 import me.BRZeph.AI.GameData.Utils.QTableSaver;
-import me.BRZeph.AI.Core.Action;
 import me.BRZeph.AI.Core.State;
 import me.BRZeph.Screens.Levels.BaseLevelScreen;
 import me.BRZeph.TowerDefenseGame;
-import me.BRZeph.core.Managers.WaveManager;
+import me.BRZeph.core.WaveSystem.WaveManager;
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
 
 import java.util.List;
 
-import static me.BRZeph.utils.Constants.AIValues.*;
-import static me.BRZeph.utils.Constants.CameraValues.*;
+import static me.BRZeph.utils.Constants.Constants.AIValues.*;
+import static me.BRZeph.utils.Constants.Constants.CameraValues.*;
 import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 public class AIScreen extends BaseLevelScreen implements InputProcessor {

@@ -15,6 +15,6 @@ public class TankMonsterStrategy implements TargetingStrategy {
     }
     @Override
     public String toString() {
-        return "Targetting system -> TankMonsterStrategy";
+        return "Tank";
     }
 }

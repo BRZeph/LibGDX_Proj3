@@ -1,25 +1,25 @@
 package me.BRZeph.AI.GameEnvironment;
 
 import me.BRZeph.AI.Actions.ActionLogger;
-import me.BRZeph.AI.Core.Action;
 import me.BRZeph.AI.Actions.PlaceTower;
 import me.BRZeph.AI.Actions.StartWave;
+import me.BRZeph.AI.Core.Action;
 import me.BRZeph.AI.Core.State;
 import me.BRZeph.Screens.Levels.BaseLevelScreen;
 import me.BRZeph.Screens.Levels.Level1Screen;
 import me.BRZeph.TowerDefenseGame;
-import me.BRZeph.core.Managers.CurrencyManager;
-import me.BRZeph.core.Managers.TowerManager;
-import me.BRZeph.core.Managers.WaveManager;
-import me.BRZeph.entities.Map.Tile;
-import me.BRZeph.entities.Map.TileMap;
+import me.BRZeph.core.CurrencyManager;
+import me.BRZeph.entities.Towers.TowerManager;
+import me.BRZeph.core.WaveSystem.WaveManager;
+import me.BRZeph.core.Map.Tile;
+import me.BRZeph.core.Map.TileMap;
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
 import me.BRZeph.entities.Towers.TowerType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.BRZeph.entities.Map.TileType.getTileFromTowerItem;
+import static me.BRZeph.core.Map.TileType.getTileFromTowerItem;
 
 public class StandardLevelsEnvironment implements GameEnvironment {
     private Level1Screen game;

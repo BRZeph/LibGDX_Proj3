@@ -2,18 +2,19 @@ package me.BRZeph.core.Assets;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import me.BRZeph.entities.Map.TileType;
-import me.BRZeph.utils.Constants;
-import me.BRZeph.utils.GlobalUtils;
+import me.BRZeph.core.Map.TileType;
+import me.BRZeph.utils.Constants.Constants;
 
 import java.util.HashMap;
 
-import static me.BRZeph.entities.Map.TileType.*;
-import static me.BRZeph.utils.Constants.Paths.MonstersTexturesPath.*;
-import static me.BRZeph.utils.Constants.Paths.TilesTexturesPath.*;
-import static me.BRZeph.utils.Constants.Paths.TowersTexturesPath.*;
-import static me.BRZeph.utils.Constants.Paths.UIPath.*;
-import static me.BRZeph.utils.Constants.Paths.Values.UIValues.ButtonsValues.TEST_BUTTON_TEXTURE_PATH;
+import static me.BRZeph.core.Map.TileType.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.MonstersTexturesPath.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.TilesTexturesPath.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.TowersTexturesPath.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.UIPath.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Values.UIValues.ButtonsValues.*;
+import static me.BRZeph.utils.Constants.Constants.PlaceHolderValues.*;
+import static me.BRZeph.utils.Constants.Constants.TowerUpgradeValues.*;
 
 public class BasicAssetsManager {
 
@@ -25,6 +26,8 @@ public class BasicAssetsManager {
         loadUITextures(assetManager);
         loadTowerTextures(assetManager);
         loadMapTextureStates(assetManager);
+
+        assetManager.load(PLACE_HOLDER_TEXTURE_PATH, Texture.class);
     }
 
     private static void loadTileTextures(AssetManager assetManager){
@@ -62,11 +65,21 @@ public class BasicAssetsManager {
 
     private static void loadUITextures(AssetManager assetManager){
         assetManager.load(TEST_BUTTON_TEXTURE_PATH, Texture.class);
+        assetManager.load(START_WAVE_BUTTON_TEXTURE_PATH, Texture.class);
+        assetManager.load(PLACEHOLDER_BUTTON_TEXTURE_PATH, Texture.class);
         assetManager.load(TOWER_SHOP_BACKGROUND_UI, Texture.class);
         assetManager.load(TOWER_SHOP_FRONT_UI, Texture.class);
         assetManager.load(TOWER_MENU_UI, Texture.class);
         assetManager.load(HEART_UI, Texture.class);
         assetManager.load(SELECTED_TOWER_BACKGROUND_UI, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND0, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND1, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND2, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND3, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND4, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND100, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND101, Texture.class);
+        assetManager.load(BUTTON_BACKGROUND102, Texture.class);
         assetManager.finishLoading();
     }
 

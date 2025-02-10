@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import static me.BRZeph.utils.Constants.AIValues.*;
+import static me.BRZeph.utils.Constants.Constants.AIValues.*;
 import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 public class QLearningAgent {

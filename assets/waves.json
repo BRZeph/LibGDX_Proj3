@@ -1,0 +1,238 @@
+[
+  {
+    "comment": "WAVE 1",
+    "spawnBehaviors": [
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 2, "timeLimit": 21, "variant": "ELITE"}
+    ]
+  },
+  {
+    "comment": "WAVE 2",
+    "spawnBehaviors": [
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0.0, "spawnInterval": 1.5, "timeLimit": 22.6, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 3",
+    "spawnBehaviors": [
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 2, "timeLimit": 20.1, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 4.5, "spawnInterval": 2.5, "timeLimit": 19.6, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 4",
+    "spawnBehaviors": [
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 2, "timeLimit": 20.1, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 8, "spawnInterval": 1, "timeLimit": 15.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 5",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0.0, "spawnInterval": 2.5, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 7.6, "spawnInterval": 3.5, "variant": "ARMORED"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 21.7, "spawnInterval": 10000, "timeLimit": 21.8, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 3, "timeLimit": 30.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 6",
+    "spawnBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 2, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 8.1, "spawnInterval": 1.5, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 14.3, "spawnInterval": 0.8, "timeLimit": 24, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 7",
+    "spawnBehaviors": [
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 5, "spawnInterval": 0.2, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 5.81, "spawnInterval": 1000, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 10, "spawnInterval": 0.15, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 10.91, "spawnInterval": 1000, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 20, "spawnInterval": 0.15, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 3, "startTime": 21.09, "spawnInterval": 1000, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 3, "timeLimit": 24, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 1, "startTime": 22, "spawnInterval": 10000, "timeLimit": 22.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 8",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0.0, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 5, "spawnInterval": 4, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 15, "spawnInterval": 2.5, "variant": "ARMORED"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 3, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 20, "spawnInterval": 1000, "timeLimit": 20.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 9",
+    "spawnBehaviors": [
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 4, "spawnInterval": 0.2, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 10, "spawnInterval": 0.15, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 15, "spawnInterval": 3, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 0, "spawnInterval": 3, "timeLimit": 24, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 22, "spawnInterval": 1000, "timeLimit": 22.1, "variant": "ARMORED"}
+    ]
+  },
+  {
+    "comment": "WAVE 10",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 0, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 5, "spawnInterval": 4, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 15, "spawnInterval": 0.2, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"}
+    ]
+  },
+  {
+    "comment": "WAVE 11",
+    "spawnBehaviors": [
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 0, "spawnInterval": 0.2, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 3, "startTime": 8, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 16, "spawnInterval": 2.5, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 25, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 20, "spawnInterval": 1000, "timeLimit": 20.1, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"}
+    ]
+  },
+  {
+    "comment": "WAVE 12",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 3, "startTime": 0, "spawnInterval": 2.5, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 3, "startTime": 10, "spawnInterval": 3, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 10, "startTime": 20, "spawnInterval": 0.2, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"}
+    ]
+  },
+  {
+    "comment": "WAVE 13",
+    "spawnBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 0, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 10, "startTime": 8, "spawnInterval": 0.2, "variant": "NORMAL"},
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 3, "startTime": 20, "spawnInterval": 2.5, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 3, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 1, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"}
+    ]
+  },
+  {
+    "comment": "WAVE 14",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 0, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 8, "spawnInterval": 3.5, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 10, "startTime": 15, "spawnInterval": 0.2, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 15",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 0, "spawnInterval": 2.5, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 10, "spawnInterval": 2.5, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 15, "startTime": 20, "spawnInterval": 0.15, "variant": "CORRUPTED"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "CORRUPTED"}
+    ]
+  },
+  {
+    "comment": "WAVE 16",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 2, "startTime": 0, "spawnInterval": 2, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 5, "spawnInterval": 3, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 15, "startTime": 15, "spawnInterval": 0.2, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "ARMORED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 17",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 3, "startTime": 0, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 3, "startTime": 7, "spawnInterval": 3.5, "variant": "CORRUPTED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 10, "startTime": 15, "spawnInterval": 0.2, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "CORRUPTED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "NORMAL"}
+    ]
+  },
+  {
+    "comment": "WAVE 18",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 3, "startTime": 0, "spawnInterval": 2.5, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 8, "spawnInterval": 3.5, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 15, "startTime": 15, "spawnInterval": 0.15, "variant": "CORRUPTED"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "CORRUPTED"}
+    ]
+  },
+  {
+    "comment": "WAVE 19",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 3, "startTime": 0, "spawnInterval": 2, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 3, "startTime": 6, "spawnInterval": 3, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 20, "startTime": 15, "spawnInterval": 0.15, "variant": "CORRUPTED"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "NORMAL"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "CORRUPTED"}
+    ]
+  },
+  {
+    "comment": "WAVE 20",
+    "spawnBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 4, "startTime": 0, "spawnInterval": 2, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 2, "startTime": 10, "spawnInterval": 3.5, "variant": "CORRUPTED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 25, "startTime": 20, "spawnInterval": 0.1, "variant": "NORMAL"}
+    ],
+    "endWaveBehaviors": [
+      {"monsterType": "ZOMBIE", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 5, "timeLimit": 30, "variant": "ARMORED"},
+      {"monsterType": "SKELETON", "amountPerSpawn": 1, "startTime": 0, "spawnInterval": 4, "timeLimit": 30, "variant": "CORRUPTED"},
+      {"monsterType": "DEMONIC_IMP", "amountPerSpawn": 5, "startTime": 25, "spawnInterval": 1000, "timeLimit": 25.1, "variant": "NORMAL"}
+    ]
+  }
+]

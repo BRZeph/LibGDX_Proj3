@@ -19,8 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import static me.BRZeph.utils.Constants.LocalPaths.QTABLE_EXPORT_NAME;
-import static me.BRZeph.utils.Constants.LocalPaths.QTABLE_EXPORT_PATH;
+import static me.BRZeph.utils.Constants.Constants.LocalPaths.QTABLE_EXPORT_NAME;
+import static me.BRZeph.utils.Constants.Constants.LocalPaths.QTABLE_EXPORT_PATH;
 
 
 public class QTableSaver {

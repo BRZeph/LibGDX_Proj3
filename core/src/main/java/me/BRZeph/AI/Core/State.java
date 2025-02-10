@@ -1,7 +1,7 @@
 package me.BRZeph.AI.Core;
 
-import me.BRZeph.core.Managers.CurrencyManager;
-import me.BRZeph.entities.Map.TileMap;
+import me.BRZeph.core.CurrencyManager;
+import me.BRZeph.core.Map.TileMap;
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
 
 import java.util.List;

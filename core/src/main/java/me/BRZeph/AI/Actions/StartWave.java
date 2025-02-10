@@ -3,7 +3,7 @@ package me.BRZeph.AI.Actions;
 import me.BRZeph.AI.GameEnvironment.GameEnvironment;
 import me.BRZeph.AI.Core.Action;
 
-import static me.BRZeph.utils.Constants.AIValues.*;
+import static me.BRZeph.utils.Constants.Constants.AIValues.*;
 
 public class StartWave implements Action {
     private float reward;

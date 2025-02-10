@@ -2,14 +2,14 @@ package me.BRZeph.AI.Actions;
 
 import me.BRZeph.AI.GameEnvironment.GameEnvironment;
 import me.BRZeph.AI.Core.Action;
-import me.BRZeph.entities.Map.TileMap;
-import me.BRZeph.entities.Map.TileType;
+import me.BRZeph.core.Map.TileMap;
+import me.BRZeph.core.Map.TileType;
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
 import me.BRZeph.entities.Towers.TowerType;
 
-import static me.BRZeph.utils.Constants.AIValues.*;
-import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_HEIGHT;
-import static me.BRZeph.utils.Constants.Paths.TileValues.TILE_WIDTH;
+import static me.BRZeph.utils.Constants.Constants.AIValues.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.TileValues.TILE_HEIGHT;
+import static me.BRZeph.utils.Constants.Constants.Paths.TileValues.TILE_WIDTH;
 
 public class PlaceTower implements Action {
     private Tower lastPlacedTower;

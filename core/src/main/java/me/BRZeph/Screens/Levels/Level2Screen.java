@@ -2,8 +2,8 @@ package me.BRZeph.Screens.Levels;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import me.BRZeph.core.Managers.ScreenManager;
-import me.BRZeph.core.Managers.WaveManager;
+import me.BRZeph.Screens.ScreenManager;
+import me.BRZeph.core.WaveSystem.WaveManager;
 
 public class Level2Screen extends BaseLevelScreen {
     private float playerCurrentHealth;

@@ -11,6 +11,7 @@ public class Projectile {
     private Monster target;
     private Texture texture;
     private boolean reachedTarget;
+    private boolean originBounce;
 
     public Projectile(float startX, float startY, float speed, float damage, Monster target, Texture texture) {
         this.x = startX;
@@ -19,7 +20,8 @@ public class Projectile {
         this.damage = damage;
         this.target = target;
         this.texture = texture;
-        reachedTarget = false;
+        this.reachedTarget = false;
+        this.originBounce = false;
     }
 
     @Override
@@ -83,5 +85,17 @@ public class Projectile {
 
     public float getY() {
         return y;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setOriginBounce(boolean originBounce) {
+        this.originBounce = originBounce;
+    }
+
+    public boolean isOriginBounce() {
+        return originBounce;
     }
 }

@@ -4,7 +4,7 @@ package me.BRZeph.AI.GameData;
 import me.BRZeph.AI.GameData.Data.TowerData;
 import me.BRZeph.AI.GameData.Data.WaveData;
 import me.BRZeph.entities.Towers.PlacedTower.Tower;
-import me.BRZeph.entities.WaveSystem.Wave;
+import me.BRZeph.core.WaveSystem.Wave;
 import me.BRZeph.entities.monster.MonsterType;
 
 import java.util.ArrayList;

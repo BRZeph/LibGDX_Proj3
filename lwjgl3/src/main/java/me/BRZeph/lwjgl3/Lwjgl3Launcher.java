@@ -5,13 +5,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import me.BRZeph.TowerDefenseGame;
 
 import java.io.IOException;
-import java.net.URL;
-import java.io.File;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
-import static me.BRZeph.utils.Constants.*;
+import static me.BRZeph.utils.Constants.Constants.*;
 import static me.BRZeph.utils.GlobalUtils.consoleLog;
 
 /** Launches the desktop (LWJGL3) application. */

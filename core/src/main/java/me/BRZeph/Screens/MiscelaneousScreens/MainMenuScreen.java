@@ -6,10 +6,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.BRZeph.core.Managers.ScreenManager;
+import me.BRZeph.Screens.ScreenManager;
 import me.BRZeph.utils.GlobalUtils;
 
-import static me.BRZeph.utils.Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND;
+import static me.BRZeph.utils.Constants.Constants.Paths.ScreensTexturesPath.MAIN_MENU_BACKGROUND;
 
 public class MainMenuScreen implements Screen, InputProcessor {
     private final ScreenManager screenManager;
@@ -65,6 +65,13 @@ public class MainMenuScreen implements Screen, InputProcessor {
                 break;
             case Input.Keys.NUM_6:
                 screenManager.beginAI(1);
+                break;
+            case Input.Keys.NUM_7:
+                screenManager.showUIDevelopment();
+                break;
+            case Input.Keys.NUM_8:
+                screenManager.showMTD();
+                break;
             default:
                 return false;
         }

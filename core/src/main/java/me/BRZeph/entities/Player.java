@@ -7,12 +7,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import me.BRZeph.core.Assets.AdvancedAssetsManager;
-import me.BRZeph.entities.Map.TileMap;
-import me.BRZeph.entities.Map.TileType;
+import me.BRZeph.core.Map.TileMap;
+import me.BRZeph.core.Map.TileType;
 import me.BRZeph.entities.Towers.TowerItem;
 
-import static me.BRZeph.utils.Constants.Paths.Animations.PLAYER_WALK_ANIMATION_NAME;
-import static me.BRZeph.utils.Constants.Paths.Values.PlayerValues.*;
+import static me.BRZeph.utils.Constants.Constants.Paths.Animations.PLAYER_WALK_ANIMATION_NAME;
+import static me.BRZeph.utils.Constants.Constants.Paths.Values.PlayerValues.*;
 
 public class Player {
     private Vector2 position;
