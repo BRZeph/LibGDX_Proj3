@@ -53,6 +53,8 @@ public abstract class Tower {
     protected final List<TargetingStrategy> strategies;
     protected int currentStrategyIndex;
     protected float damageDealt;
+    protected float criticalHitChance;
+    protected float criticalHitDamage;
 
     protected Consumer<WaveManager> attackModifier;
     protected Consumer<Tower> towerModifier;
@@ -65,6 +67,8 @@ public abstract class Tower {
         this.damageDealt = 0;
         this.kills = 0;
         this.shotsFired = 0;
+        this.criticalHitChance = 0;
+        this.criticalHitDamage = 0;
 
         this.attackRange = type.getRange();
         this.damage = type.getDamage();
@@ -238,7 +242,7 @@ public abstract class Tower {
                 Projectile projectile = projectileIterator.next();
                 projectile.update(delta);
                 if (projectile.hasReachedTarget()) {
-                    projectile.getTarget().takeDamage(damage);
+                    projectile.getTarget().takeDamage(this, damage);
                     projectile.getTarget().subIncomingDamage(damage);
                     projectileIterator.remove();
                     damageDealt += damage;
@@ -491,6 +495,22 @@ public abstract class Tower {
 
     public void setTowerModifier(Consumer<Tower> towerModifier) {
         this.towerModifier = towerModifier;
+    }
+
+    public float getCriticalHitDamage() {
+        return criticalHitDamage;
+    }
+
+    public void setCriticalHitDamage(float criticalHitDamage) {
+        this.criticalHitDamage = criticalHitDamage;
+    }
+
+    public float getCriticalHitChance() {
+        return criticalHitChance;
+    }
+
+    public void setCriticalHitChance(float criticalHitChance) {
+        this.criticalHitChance = criticalHitChance;
     }
 
     public int getSecondPath() {

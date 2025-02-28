@@ -25,6 +25,8 @@ public class TowerUpgradeConstants {
         public static final int AT_P1_T2_GC = 250;
         public static final int AT_P1_T2_EC = 0;
         public static final int AT_P1_T2_MC = 0;
+        public static final float AT_P2_T1_AS_INCREASE = 1.2f;
+        public static final float AT_P2_T1_CRIT_CHANCE = 20f;
 
         public static final String AT_P1_T3_NAME = "Bouncing\nshot";
         public static final String AT_P1_T3_DESCRIPTION = "Hit bounce to a second target";

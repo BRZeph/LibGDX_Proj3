@@ -7,8 +7,10 @@ import me.BRZeph.core.Assets.AdvancedAssetsManager;
 import me.BRZeph.core.CurrencyManager;
 import me.BRZeph.core.WaveSystem.Wave;
 import me.BRZeph.core.Map.Node;
+import me.BRZeph.entities.Towers.PlacedTower.Tower;
 
 import java.util.List;
+import java.util.Random;
 
 import static me.BRZeph.entities.monster.MonsterType.LESSER_ABYSSAL_MATRON;
 import static me.BRZeph.entities.monster.Variant.applyVariant;
@@ -436,7 +438,13 @@ public class Monster {
         this.currentHealth = newCurrentHealth;
     }
 
-    public void takeDamage(float dmg){
+    public void takeDamage(Tower tower, float dmg){
+        float critChance = tower.getCriticalHitChance();
+        Random random = new Random();
+        float val = random.nextFloat(101);
+        if(val < critChance){
+            dmg = dmg*tower.getCriticalHitDamage();
+        }
         this.currentHealth -= dmg;
     }
 

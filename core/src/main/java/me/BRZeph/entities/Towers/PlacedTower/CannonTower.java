@@ -58,10 +58,10 @@ public class CannonTower extends Tower {
                         })
                         .collect(Collectors.toList());
                     for (Monster monster : aoeAffectedMonsters) {
-                        monster.takeDamage(CANNON_TOWER_AOE_DAMAGE);
+                        monster.takeDamage(this, CANNON_TOWER_AOE_DAMAGE);
                         damageDealt += CANNON_TOWER_AOE_DAMAGE;
                     }
-                    projectile.getTarget().takeDamage(damage);
+                    projectile.getTarget().takeDamage(this, damage);
                     projectile.getTarget().subIncomingDamage(damage);
                     projectileIterator.remove();
                     damageDealt += damage;

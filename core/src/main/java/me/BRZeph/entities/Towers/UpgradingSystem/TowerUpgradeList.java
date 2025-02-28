@@ -144,7 +144,7 @@ public class TowerUpgradeList {
                                             bounceMonster.addIncomingDamage(bounceDamage);
                                         }
                                     }
-                                    projectile.getTarget().takeDamage(projectile.getDamage());
+                                    projectile.getTarget().takeDamage(tower, projectile.getDamage());
                                     projectile.getTarget().subIncomingDamage(projectile.getDamage());
                                     projectileIterator.remove();
                                     tower.setDamageDealt(tower.getDamageDealt() + projectile.getDamage());
@@ -178,7 +178,8 @@ public class TowerUpgradeList {
                     new TowerUpgrade("Upgrade 5", "Increases Attack Speed",
                         120, 0, 50, 2, 1, AT_P2_T1_BUY_TEXTURE_NAME,
                         (tower) -> {
-                            // Modify the tower's stats here. Example: increase attack speed.
+                            tower.setAttackRange(tower.getAttackCooldown()/AT_P2_T1_AS_INCREASE);
+                            tower.setCriticalHitChance(tower.getCriticalHitDamage() + AT_P2_T1_CRIT_CHANCE);
                         },null, null
 //                    (waveManager) -> {
 //                        // Modify the tower's attack here. Example: instantaneous hit.

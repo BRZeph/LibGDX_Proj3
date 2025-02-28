@@ -80,12 +80,12 @@ public class LightningTower extends Tower {
 
                     for (Monster monster : chainAffectedMonster){
                         if (monster != null) {
-                            monster.takeDamage(chainHitDamage);
+                            monster.takeDamage(this, chainHitDamage);
                             damageDealt += chainHitDamage;
                         }
                     }
 
-                    projectile.getTarget().takeDamage(damage);
+                    projectile.getTarget().takeDamage(this, damage);
                     projectile.getTarget().subIncomingDamage(damage);
                     projectileIterator.remove();
                     damageDealt += damage;
